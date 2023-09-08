@@ -54,7 +54,7 @@ class APIController extends Controller
         }
     }
 
-    public function getGoldPrice($str = "USD")
+    public static function getGoldPrice($str = "USD")
     {
         $client = new Client();
         //free 100/mon 1hrs upd --metalpriceapi.com
@@ -69,7 +69,7 @@ class APIController extends Controller
         }
     }
 
-    public function getQMData()
+    public static function getQMData()
     {
         $currencyCode = "MYR";
         $packageCode = "GOLDACCOUNT";
