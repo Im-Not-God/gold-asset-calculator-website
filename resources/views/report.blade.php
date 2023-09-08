@@ -32,7 +32,7 @@
             size: portrait;
         }
 
-        .maxHeight{
+        .maxHeight {
             max-height: 80vh;
         }
     </style>
@@ -412,9 +412,12 @@
                             <hr style="margin: unset;">RM&nbsp;{{number_format($result[$count]->netCashOut_MYR, 2)}}
                         </td>
                         @if ($result[$count]->profit_USD > 0)
-                        <td style="color: lime">
-                            $&nbsp;{{number_format($result[$count]->profit_USD, 2)}}&nbsp;↑
-                            <hr style="margin: unset;">RM&nbsp;{{number_format($result[$count]->profit_MYR, 2)}}&nbsp;↑
+                        <td style="color: lime" class="d-flex align-items-center">
+                            <div>
+                                $&nbsp;{{number_format($result[$count]->profit_USD, 2)}}
+                                <hr style="margin: unset;">RM&nbsp;{{number_format($result[$count]->profit_MYR, 2)}}
+                            </div>
+                            <div class="ms-1 fs-4">↑</div>
                         </td>
                         @elseif ($result[$count]->profit_USD == 0)
                         <td>
@@ -422,9 +425,12 @@
                             <hr style="margin: unset;">RM&nbsp;0
                         </td>
                         @else
-                        <td style="color: red">
-                            $&nbsp;{{number_format($result[$count]->profit_USD, 2)}}&nbsp;↓
-                            <hr style="margin: unset;">RM&nbsp;{{number_format($result[$count]->profit_MYR, 2)}}&nbsp;↓
+                        <td style="color: red" class="d-flex align-items-center">
+                            <div>
+                                $&nbsp;{{number_format($result[$count]->profit_USD, 2)}}
+                                <hr style="margin: unset;">RM&nbsp;{{number_format($result[$count]->profit_MYR, 2)}}
+                            </div>
+                            <div class="ms-1 fs-4">↓</div>
                         </td>
                         @endif
                     </tr>

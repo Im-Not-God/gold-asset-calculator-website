@@ -314,7 +314,7 @@ class CalculateController extends Controller
     {
         // $cdata = $this->index(1);
         $transactions = Transaction::query();
-        foreach ($req->transactionIDs as $value) {
+        foreach ($req->transactions as $value) {
             $transactions->orWhere('id', '=', $value);
         }
         $transactions = $transactions->get();
