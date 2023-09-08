@@ -92,10 +92,6 @@
         </nav>
 
         <h3>{{__('Portfolio List')}}</h3>
-        <form method="post" action="/portfolio/getTransactions">
-        @csrf
-            <button name="type" class="text-white btn btn-primary" value="Other" type="submit">{{__('getTransaction Other')}}</button>
-        </form>
         <form method="post" action="/report">
             @csrf
 

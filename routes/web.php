@@ -34,7 +34,6 @@ Route::get('/test', function () {
 // Route::view("/test", 'test');
 Route::get('/test', [testController::class, 'index']);
 
-Route::get('/api', [CalculateController::class, 'getGoldPrice']);
 Auth::routes(['verify' => true]);
 
 Route::view('/', 'home')->name('home');
@@ -108,4 +107,7 @@ Route::post('/admin', [PlanController::class, 'update'])->middleware("adminAuth"
 
 Route::view("/chat", "chatBot");
 
-Route::post('/api/exchange', [CalculateController::class, "getExchange"]);
+//test
+Route::get('/api/exchange', [APIController::class, "getExchange"]);
+Route::get('/api/goldprice', [APIController::class, 'getGoldPrice']);
+Route::get('/api/qmdata', [APIController::class, 'getQMData']);

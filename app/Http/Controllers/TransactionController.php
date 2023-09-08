@@ -32,7 +32,7 @@ class TransactionController extends Controller
         $exchangeRate = 1;
 
         if($req->currency == "MYR")
-        $exchangeRate = CalculateController::getExchange($req->currency, $req->buyDate)['rates'][$req->currency];
+        $exchangeRate = APIController::getExchange($req->currency, $req->buyDate)['rate'];
 
         if($req->type == "Other"){
             Transaction::create([
@@ -66,7 +66,7 @@ class TransactionController extends Controller
         $exchangeRate = 1;
 
         if($req->currency == "MYR")
-        $exchangeRate = CalculateController::getExchange($req->currency, $req->buyDate)['rates'][$req->currency];
+        $exchangeRate = APIController::getExchange($req->currency, $req->buyDate)['rate'];
 
         $transaction = Transaction::find($req->id);
         $transaction->downpayment = number_format($req->downpayment / $exchangeRate, 2, '.', '');

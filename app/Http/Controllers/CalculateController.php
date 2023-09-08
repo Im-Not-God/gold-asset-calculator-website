@@ -30,7 +30,7 @@ class CalculateController extends Controller
 
         $goldPrice = ($report) ? $req->gold_price : $req->goldPrice;
         // $currency = ($report) ? $req->currency : "USD";
-        // $downpayment_USD = ($report) ? (($currency == "MYR") ? $req->downpayment*$this->getExchange(null ,$req->buyDate) : $req->downpayment) : $req->downpayment_USD;
+        // $downpayment_USD = ($report) ? (($currency == "MYR") ? $req->downpayment*APIController::getExchange(null ,$req->buyDate) : $req->downpayment) : $req->downpayment_USD;
         $downpayment_USD = ($report) ? ($req->downpayment) : $req->downpayment_USD;
         $totalHoldingGold = $downpayment_USD / $goldPrice;
         $totalHoldingGold = $downpayment_USD / $goldPrice;
@@ -74,7 +74,7 @@ class CalculateController extends Controller
             if (session("exchangeRate")) {
                 $exchangeRate = session()->get("exchangeRate");
             } else {
-                $exchangeRate = $this->getExchange();
+                $exchangeRate = APIController::getExchange();
             }
         }
 
@@ -160,7 +160,7 @@ class CalculateController extends Controller
             case "Other": {
                     $currentGoldPrice = $this->getGoldPrice();
                     $currentGoldPrice_USDg = $currentGoldPrice["items"][0]["xauPrice"] / 31.1035;
-                    $exchangeRate = $this->getExchange();
+                    $exchangeRate = APIController::getExchange();
 
                     if (strlen((string)$currentGoldPrice["ts"]) - strlen((string)time())  > 2) {
                         $currentGoldPrice_updTime = gmdate("Y-m-d H:i:s", $currentGoldPrice["ts"] / 1000 + date("Z"));
@@ -209,7 +209,7 @@ class CalculateController extends Controller
         } else {
             $currentGoldPrice_updTime = gmdate("Y-m-d H:i:s", $getCurrentGoldPrice["ts"] + date("Z"));
         }
-        $exchangeRate = $this->getExchange();
+        $exchangeRate = APIController::getExchange();
         session()->put("exchangeRate", $exchangeRate);
 
         $exchangeRate_updTime = "";
@@ -313,9 +313,7 @@ class CalculateController extends Controller
     public function transaction_calc(Request $req)
     {
         // $cdata = $this->index(1);
-
         $transactions = Transaction::query();
-        return $req;
         foreach ($req->transactionIDs as $value) {
             $transactions->orWhere('id', '=', $value);
         }
