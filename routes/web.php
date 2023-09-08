@@ -108,6 +108,10 @@ Route::post('/admin', [PlanController::class, 'update'])->middleware("adminAuth"
 Route::view("/chat", "chatBot");
 
 //test
-Route::get('/api/exchange', [APIController::class, "getExchange"]);
-Route::get('/api/goldprice', [APIController::class, 'getGoldPrice']);
+Route::get('/api/exchange', function(){
+    return APIController::getExchange()['data'];
+});
+Route::get('/api/goldprice', function(){
+    return APIController::getGoldPrice()['data'];
+});
 Route::get('/api/qmdata', [APIController::class, 'getQMData']);

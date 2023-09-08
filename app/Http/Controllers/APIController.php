@@ -46,7 +46,7 @@ class APIController extends Controller
                         "data" => $json,
                         "timestamp" => $json["timestamp"],
                         "rate" => $json['quotes']['USDMYR']
-                    ];;
+                    ];
                 }
             } catch (Exception $e) {
                 $next = true;
@@ -65,7 +65,11 @@ class APIController extends Controller
         if ($response->getStatusCode() == 200) { // 200 OK
             $response_data = $response->getBody()->getContents();
             $json = json_decode($response_data, true);
-            return $json;
+            return [
+                "data" => $json,
+                "timestamp" => $json["ts"],
+                "goldPrice" => $json["items"][0]["xauPrice"]
+            ];
         }
     }
 

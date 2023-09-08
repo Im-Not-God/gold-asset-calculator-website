@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Transaction;
-use App\Http\Controllers\CalculateController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -16,8 +15,7 @@ class TransactionController extends Controller
     {
         $validationFail = session()->has('validationFail')? session('validationFail'):'false';
         $data = User::find(Auth::id())->transactions()->paginate(10);
-        $getCurrentGoldPrice = (new CalculateController)->getGoldPrice();
-        $getCurrentGoldPrice = $getCurrentGoldPrice["items"][0]["xauPrice"] / 31.1035;
+        $getCurrentGoldPrice = APIController::getGoldPrice()["goldPrice"] / 31.1035;
         return view('transaction', ['data' => $data, 'currentGoldPrice' => $getCurrentGoldPrice, 'validationFail' => $validationFail]);
     }
 

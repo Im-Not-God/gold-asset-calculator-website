@@ -63,12 +63,22 @@
                 <div class="col-sm-3 align-items-baseline d-flex flex-wrap">
                     <h5>{{__('Convert rate:')}}</h5>
                     &nbsp;
-                    <input style="width:80px;" step="any" min="0" type="number" class="bg-dark form-control text-white" style="color-scheme: dark;" name="convertPercent" value="{{$convertPercent}}" placeholder="%">
+                    <input style="width:100px;" step="any" min="0" type="number" class="bg-dark form-control text-white @error('convertPercent') is-invalid @enderror" style="color-scheme: dark;" name="convertPercent" value="{{$convertPercent}}" placeholder="%">
+                    @error('convertPercent')
+                    <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                    @enderror
                 </div>
                 <div class="col-sm-4 align-items-baseline d-flex flex-wrap">
                     <h5>{{__('Annual Management Fee:')}}</h5>
                     &nbsp;
-                    <input style="width:80px;" step="any" min="0" type="number" class="bg-dark form-control text-white" style="color-scheme: dark;" name="managementFeePercent" value="{{$managementFeePercent}}" placeholder="%">
+                    <input style="width:100px;" step="any" min="0" type="number" class="bg-dark form-control text-white @error('managementFeePercent') is-invalid @enderror" style="color-scheme: dark;" name="managementFeePercent" value="{{$managementFeePercent}}" placeholder="%">
+                    @error('managementFeePercent')
+                    <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                    @enderror
                 </div>
             </div>
 
