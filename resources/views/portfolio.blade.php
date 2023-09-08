@@ -44,6 +44,19 @@
             color: #0d6efd;
         }
 
+        .expand-btn {
+            padding: 0;
+            height: 24px;
+            width: 24px;
+            border: none;
+            color: #9aa0a6;
+        }
+
+        .expand-btn:hover {
+            color: #e8eaed;
+        }
+
+
         .edit-btn:hover {
             color: #0b5ed7;
         }
@@ -96,7 +109,7 @@
             @csrf
 
             <button type="button" class="btn btn-warning" id="addBtn" data-bs-toggle="modal" data-bs-target="#addModal">{{__('Add')}}</button>
-            <button disabled type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteSelectedModal" id="deleteSelected">{{__('Delete')}}</button>
+            <button disabled type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" id="deleteSelectedBtn">{{__('Delete')}}</button>
             <button disabled class="text-white btn btn-primary" type="submit" id="Calculate">{{__('Calculate report test')}}</button>
 
             <div class="border-img">
@@ -132,7 +145,7 @@
                                         </span>
                                     </button>
 
-                                    <button type="button" class="btn delete-btn" title="{{__('delete')}}" data-bs-toggle="modal" data-bs-target="#deleteModal" data-bs-id="{{$portfolio->id}}" data-bs-date="{{$portfolio->created_at}}" data-bs-type="{{$portfolio->type}}">
+                                    <button type="button" class="btn delete-btn" title="{{__('delete')}}" data-bs-toggle="modal" data-bs-target="#deleteModal">
                                         <span class="material-symbols-outlined">
                                             delete
                                         </span>
@@ -286,35 +299,7 @@
     </div>
 
     <!-- deleteModal -->
-    <div class="modal fade" id="deleteModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">{{__('Are you sure to delete')}}</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form method="post" action="#" style="display: contents;">
-                    @csrf
-                    <div class="modal-body">
-                        <input type="hidden" id="id" name="transactions[]">
-                        <p id="id">{{__('ID')}}: <span></span></p>
-                        <p id="date">{{__('Date')}}: <span></span></p>
-                        <p id="type">{{__('Type')}}: <span></span></p>
-                        <p id="gold_price">{{__('Gold Price')}}(USD/g): <span></span></p>
-                        <p id="downpayment">{{__('Downpayment')}}(USD): <span></span></p>
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{__("Close")}}</button>
-                        <button type="submit" class="btn btn-danger">{{__("Delete")}}</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- deleteSelectedModal -->
-    <div class="modal fade" id="deleteSelectedModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal fade" id="deleteModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
@@ -385,63 +370,83 @@
             })
         }
 
-        const deleteModal = document.getElementById('deleteModal');
-        if (deleteModal) {
-            deleteModal.addEventListener('show.bs.modal', event => {
-                // Button that triggered the modal
-                const button = event.relatedTarget;
-                // Extract info from data-bs-* attributes
-                const id = button.getAttribute('data-bs-id');
-                const date = button.getAttribute('data-bs-date');
-                const type = button.getAttribute('data-bs-type');
-                const gold = button.getAttribute('data-bs-gold');
-                const downpayment = button.getAttribute('data-bs-downpayment');
-                // If necessary, you could initiate an Ajax request here
-                // and then do the updating in a callback.
+        $(".delete-btn").on("click", function() {
+            $("#deleteModal .modal-body").html("");
+            let data = $(this).parent().parent().find(".data");
+            let id = data[0].textContent;
+            let date = data[1].textContent;
+            let type = data[2].textContent;
+            let num = data[3].textContent;
 
-                // Update the modal's content.
-                deleteModal.querySelector('.modal-body input[id="id"]').value = id;
-                deleteModal.querySelector('.modal-body p[id="id"] span').textContent = id;
-                deleteModal.querySelector('.modal-body p[id="date"] span').textContent = date;
-                deleteModal.querySelector('.modal-body p[id="type"] span').textContent = type;
-                deleteModal.querySelector('.modal-body p[id="gold_price"] span').textContent = gold;
-                deleteModal.querySelector('.modal-body p[id="downpayment"] span').textContent = downpayment;
-            })
-        }
+            $("#deleteModal .modal-body").append(`
+                    <input type="hidden" id="id" name="portfolios[]" value=${id}>
+                    <p id="id">ID: ${id}</p>
+                    <p id="date">Date: ${date}</p>
+                    <p id="type">Type: ${type}</p>
+                    <div class="d-flex">
+                        <p id="numOfTransactions" class="clickableP">Num of transactions: ${num}</p>&nbsp;
+                        <button type="button" class="btn expand-btn" title="{{__('expand more')}}">
+                            <span class="material-symbols-outlined">
+                                expand_more
+                            </span>
+                        </button>
+                    </div>
+            `);
+        })
 
-        $("#deleteSelected").click(function() {
-            let content = "";
+        $("#deleteSelectedBtn").on("click", function() {
             let count = 0;
+            $("#deleteModal .modal-body").html("");
             $('.checkBox:checked').each(function() {
                 if (count) {
-                    content += "<hr>"
+                    $("#deleteModal .modal-body").append("<hr>");
                 }
                 count++;
                 const data = $(this).parent().parent().find(".data");
                 const id = data[0].textContent;
                 const date = data[1].textContent;
-                const gold = data[2].textContent;
-                const downpayment = data[3].textContent;
+                const type = data[2].textContent;
+                const num = data[3].textContent;
 
-                content += '<input type="hidden" id="id" name="transactions[]" value=' + id + '><p id="id">ID: ' + id + '</p><p id="date">Date: ' + date + '</p><p id="gold_price">Gold Price(USD/g): ' + gold + '</p><p id="downpayment">Downpayment(USD): ' + downpayment + '</p>'
-            })
-            $("#deleteSelectedModal .modal-body").html(content);
-        })
-
-        $('.checkBox').change(function() {
-            if ($('.checkBox:checked').length < $('.checkBox').length) {
-                $("#checkAll").prop('checked', false);
-            } else
-                $("#checkAll").prop('checked', true);
+                $("#deleteModal .modal-body").append(`
+                    <input type="hidden" id="id" name="portfolios[]" value=${id}>
+                    <p id="id">ID: ${id}</p>
+                    <p id="date">Date: ${date}</p>
+                    <p id="type">Type: ${type}</p>
+                    <div class="d-flex">
+                        <p id="numOfTransactions" class="clickableP">Num of transactions: ${num}</p>&nbsp;
+                        <button type="button" class="btn expand-btn" title="{{__('expand more')}}">
+                            <span class="material-symbols-outlined">
+                                expand_more
+                            </span>
+                        </button>
+                    </div>
+                `);
+            });
         });
 
-        $('.checkBox2').change(function() {
-            console.log("aa");
-            if ($('.checkBox2:checked').length < $('.checkBox2').length) {
-                $("#checkAll2").prop('checked', false);
-            } else
-                $("#checkAll2").prop('checked', true);
+        $("#deleteModal .modal-body").on("click", ".clickableP, .expand-btn", function() {
+            //expand more
+            var expandBtn = null;
+            if ($(this).hasClass("clickableP")) {
+                expandBtn = $(this).parent().find(".expand-btn");
+            } else {
+                expandBtn = $(this);
+            }
+            if (expandBtn.children().html() !== "expand_less") {
+                console.log("more");
+                expandBtn.children().html("expand_less");
+                expandBtn.attr("title", "{{__('expand less')}}");
+            }
+            //expand less
+            else {
+                console.log("less");
+                expandBtn.children().html("expand_more");
+                expandBtn.attr("title", "{{__('expand more')}}");
+            }
+
         });
+
 
         $(document).ready(function() {
             $('input[type=checkbox]').change(function() {
@@ -452,23 +457,36 @@
         function changeBtnState() {
             if ($('input[type=checkbox]:checked').length > 0) {
                 $('#Calculate').prop('disabled', false)
-                $('#deleteSelected').prop('disabled', false)
+                $('#deleteSelectedBtn').prop('disabled', false)
             } else {
                 $('#Calculate').prop('disabled', true)
-                $('#deleteSelected').prop('disabled', true)
+                $('#deleteSelectedBtn').prop('disabled', true)
             }
         }
 
-        $(".clickable").click(function(e) {
+        //checkbox control 
+        $(".clickable").on("click", function(e) {
             var checkbox = $(this).children().find(".checkBox");
             if (e.target != checkbox[0] && !$(e.target).hasClass("material-symbols-outlined")) {
                 checkbox.prop('checked', !checkbox.prop('checked'));
                 changeBtnState();
-                if ($('.checkBox:checked').length < $('.checkBox').length) {
-                    $("#checkAll").prop('checked', false);
-                } else
-                    $("#checkAll").prop('checked', true);
             }
+            if ($('.checkBox:checked').length < $('.checkBox').length) {
+                $("#checkAll").prop('checked', false);
+            } else
+                $("#checkAll").prop('checked', true);
+        });
+
+        //transactionsTable checkbox control 
+        $(".transactionsTable").on("click", ".clickable2", function(e) {
+            var checkbox = $(this).children().find(".checkBox2");
+            if (e.target != checkbox[0]) {
+                checkbox.prop('checked', !checkbox.prop('checked'));
+            }
+            if ($('.checkBox2:checked').length < $('.checkBox2').length) {
+                $("#checkAll2").prop('checked', false);
+            } else
+                $("#checkAll2").prop('checked', true);
         });
 
         function check(input) {

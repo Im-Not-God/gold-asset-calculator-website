@@ -78,7 +78,6 @@ class CalculateController extends Controller
         $managementFee_total = $managementFee_day * $days;
         $netCashOut = $currentValue - $convert_USD - $managementFee_total;
         $profit = $netCashOut - $holdingAmt;
-        //$profit = $currentValue - $downpayment_USD - $managementFee_total;
 
         $exchangeRate_updTime = "";
         if ($report) {
@@ -262,8 +261,15 @@ class CalculateController extends Controller
             array_push($results, $result);
         }
         $sum = [
-            $sum_totalHoldingGold, $sum_convert_USD, $sum_holdingAmt_USD, $sum_GCAmt, $sum_currentValue_USD, $sum_managementFee_total_USD, $sum_netCashOut_USD,
-            $sum_profit_USD, $sum_downpayment_USD
+            $sum_totalHoldingGold,
+            $sum_convert_USD,
+            $sum_holdingAmt_USD,
+            $sum_GCAmt,
+            $sum_currentValue_USD,
+            $sum_managementFee_total_USD,
+            $sum_netCashOut_USD,
+            $sum_profit_USD,
+            $sum_downpayment_USD
         ];
 
         return view('report', ['data' => $transactions, 'cdata' => $this->constantData, 'result' => $results, 'summary' => $sum]);

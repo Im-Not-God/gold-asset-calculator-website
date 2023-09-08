@@ -48,9 +48,9 @@ Route::post("/report", [CalculateController::class, 'transaction_calc']);
 
 
 Route::get('/transaction', [TransactionController::class, 'getAll'])->middleware("auth");
-Route::post('/transaction/add', [TransactionController::class, 'add']);
-Route::post('/transaction/update', [TransactionController::class, 'update']);
-Route::post('/transaction/delete', [TransactionController::class, 'delete']);
+Route::post('/transaction/add', [TransactionController::class, 'add'])->middleware("auth");
+Route::post('/transaction/update', [TransactionController::class, 'update'])->middleware("auth");
+Route::post('/transaction/delete', [TransactionController::class, 'delete'])->middleware("auth");
 
 
 Route::view('/goldprice', 'goldprice');
@@ -62,8 +62,8 @@ Route::view("/email/verified", "auth.verified")->middleware("verified");
 
 Route::view('/blank', 'layouts.layout');
 
-Route::get('/portfolio', [PortfolioController::class, 'getAll']);
-Route::post("/portfolio/getTransactions", [PortfolioController::class, 'getTransactions']);
+Route::get('/portfolio', [PortfolioController::class, 'getAll'])->middleware("auth");
+Route::post("/portfolio/getTransactions", [PortfolioController::class, 'getTransactions'])->middleware("auth");
 
 Route::get('set-locale/{locale}', function ($locale) {
     if (!in_array($locale, ['en', 'zh_CN', 'ms'])) {

@@ -70,4 +70,8 @@
         </div>
     </div>
 </div>
+
+<script>
+    localStorage.clear();
+</script>
 @endsection

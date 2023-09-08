@@ -16,8 +16,7 @@ class PortfolioController extends Controller
     public function getAll()
     {
         $portfolios = User::find((Auth::id()))->portfolios()->paginate(10);
-        $currentGoldPrice = (new CalculateController)->getGoldPrice();
-        $currentGoldPrice = $currentGoldPrice["items"][0]["xauPrice"] / 31.1035;
+        $currentGoldPrice = APIController::getGoldPrice()["goldPrice"] / 31.1035;
         return view('portfolio', ['data' => $portfolios]);
     }
 
@@ -41,6 +40,13 @@ class PortfolioController extends Controller
 
     public function delete(Request $req)
     {
+        $portfolios = Portfolio::query();
+        foreach ($req->portfolios as $value) {
+            $portfolios->orWhere('id', '=', $value);
+        }
+        $transactions = $portfolios->delete();
+
+        return redirect('/transaction');
     }
 
     protected function validator(array $data)

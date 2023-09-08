@@ -85,7 +85,7 @@
 
             <button type="button" class="btn btn-secondary" id="clearBtn">{{__('Clear selection')}}</button>
             <button type="button" class="btn btn-warning" id="addBtn" data-bs-toggle="modal" data-bs-target="#addModal">{{__('Add')}}</button>
-            <button disabled type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteSelectedModal" id="deleteSelected">{{__('Delete')}}</button>
+            <button disabled type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" id="deleteSelectedBtn">{{__('Delete')}}</button>
             <button disabled class="text-white btn btn-primary" type="submit" id="Calculate">{{__('Calculate report test')}}</button>
 
             <div class="border-img">
@@ -133,7 +133,7 @@
                                         </span>
                                     </button>
 
-                                    <button type="button" class="btn delete-btn" title="{{__('delete')}}" data-bs-toggle="modal" data-bs-target="#deleteModal" data-bs-id="{{$transaction->id}}" data-bs-date="{{$transaction->created_at}}" data-bs-type="{{$transaction->type}}" data-bs-gold="{{$transaction->gold_price}}" data-bs-downpayment="{{$transaction->downpayment}}">
+                                    <button type="button" class="btn delete-btn" title="{{__('delete')}}" data-bs-toggle="modal" data-bs-target="#deleteModal">
                                         <span class="material-symbols-outlined">
                                             delete
                                         </span>
@@ -376,35 +376,7 @@
     </div>
 
     <!-- deleteModal -->
-    <div class="modal fade" id="deleteModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">{{__('Are you sure to delete')}}</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form method="post" action="/transaction/delete" style="display: contents;">
-                    @csrf
-                    <div class="modal-body">
-                        <input type="hidden" id="id" name="transactions[]">
-                        <p id="id">{{__('ID')}}: <span></span></p>
-                        <p id="date">{{__('Date')}}: <span></span></p>
-                        <p id="type">{{__('Type')}}: <span></span></p>
-                        <p id="gold_price">{{__('Gold Price')}}(USD/g): <span></span></p>
-                        <p id="downpayment">{{__('Downpayment')}}(USD): <span></span></p>
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{__("Close")}}</button>
-                        <button type="submit" class="btn btn-danger">{{__("Delete")}}</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- deleteSelectedModal -->
-    <div class="modal fade" id="deleteSelectedModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal fade" id="deleteModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
@@ -471,31 +443,7 @@
             })
         }
 
-        const deleteModal = document.getElementById('deleteModal');
-        if (deleteModal) {
-            deleteModal.addEventListener('show.bs.modal', event => {
-                // Button that triggered the modal
-                const button = event.relatedTarget;
-                // Extract info from data-bs-* attributes
-                const id = button.getAttribute('data-bs-id');
-                const date = button.getAttribute('data-bs-date');
-                const type = button.getAttribute('data-bs-type');
-                const gold = button.getAttribute('data-bs-gold');
-                const downpayment = button.getAttribute('data-bs-downpayment');
-                // If necessary, you could initiate an Ajax request here
-                // and then do the updating in a callback.
-
-                // Update the modal's content.
-                deleteModal.querySelector('.modal-body input[id="id"]').value = id;
-                deleteModal.querySelector('.modal-body p[id="id"] span').textContent = id;
-                deleteModal.querySelector('.modal-body p[id="date"] span').textContent = date;
-                deleteModal.querySelector('.modal-body p[id="type"] span').textContent = type;
-                deleteModal.querySelector('.modal-body p[id="gold_price"] span').textContent = gold;
-                deleteModal.querySelector('.modal-body p[id="downpayment"] span').textContent = downpayment;
-            })
-        }
-
-        $("delete-btn").click(function() {
+        $(".edit-btn").on("click", function() {
             let data = $(this).parent().parent().find(".data");
             let id = data[0].textContent;
             let date = data[1].textContent;
@@ -504,10 +452,22 @@
 
             let content = `<input type="hidden" id="id" name="transactions[]" value=${id}><p id="id">ID: ${id}</p><p id="date">Date: ${date}</p><p id="gold_price">Gold Price(USD/g): ${gold}</p><p id="downpayment">Downpayment(USD): ${downpayment}</p>`
 
-            $("#deleteSelectedModal .modal-body").html(content);
+            $("#deleteModal .modal-body").html(content);
         })
 
-        $("#deleteSelected").click(function() {
+        $(".delete-btn").on("click", function() {
+            let data = $(this).parent().parent().find(".data");
+            let id = data[0].textContent;
+            let date = data[1].textContent;
+            let gold = data[2].textContent;
+            let downpayment = data[3].textContent;
+
+            let content = `<input type="hidden" id="id" name="transactions[]" value=${id}><p id="id">ID: ${id}</p><p id="date">Date: ${date}</p><p id="gold_price">Gold Price(USD/g): ${gold}</p><p id="downpayment">Downpayment(USD): ${downpayment}</p>`
+
+            $("#deleteModal .modal-body").html(content);
+        })
+
+        $("#deleteSelectedBtn").click(function() {
             let content = "";
             let count = 0;
             $('.checkBox:checked').each(function() {
@@ -523,15 +483,8 @@
 
                 content += `<input type="hidden" id="id" name="transactions[]" value=${id}><p id="id">ID: ${id}</p><p id="date">Date: ${date}</p><p id="gold_price">Gold Price(USD/g): ${gold}</p><p id="downpayment">Downpayment(USD): ${downpayment}</p>`
             })
-            $("#deleteSelectedModal .modal-body").html(content);
+            $("#deleteModal .modal-body").html(content);
         })
-
-        $('.checkBox').change(function() {
-            if ($('.checkBox:checked').length < $('.checkBox').length) {
-                $("#checkAll").prop('checked', false);
-            } else
-                $("#checkAll").prop('checked', true);
-        });
 
         $(document).ready(function() {
             changeBtnState()
@@ -544,24 +497,23 @@
         function changeBtnState() {
             if ($('input[type=checkbox]:checked').length > 0) {
                 $('#Calculate').prop('disabled', false)
-                $('#deleteSelected').prop('disabled', false)
+                $('#deleteSelectedBtn').prop('disabled', false)
             } else {
                 $('#Calculate').prop('disabled', true)
-                $('#deleteSelected').prop('disabled', true)
+                $('#deleteSelectedBtn').prop('disabled', true)
             }
         }
 
         $(".clickable").click(function(e) {
             var checkbox = $(this).children().find(".checkBox");
-            // console.log(checkbox[0])
             if (e.target != checkbox[0] && !$(e.target).hasClass("material-symbols-outlined")) {
                 checkbox.prop('checked', !checkbox.prop('checked'));
                 changeBtnState();
-                if ($('.checkBox:checked').length < $('.checkBox').length) {
-                    $("#checkAll").prop('checked', false);
-                } else
-                    $("#checkAll").prop('checked', true);
             }
+            if ($('.checkBox:checked').length < $('.checkBox').length) {
+                $("#checkAll").prop('checked', false);
+            } else
+                $("#checkAll").prop('checked', true);
         });
 
         if (@json($validationFail) == 'true') {

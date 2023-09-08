@@ -7,6 +7,21 @@
 
 <body>
     <style>
+        thead {
+            position: sticky;
+            top: 0;
+        }
+
+        thead::after {
+            content: "";
+            height: 0.5px;
+            background-color: #ccc;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
         .output {
             display: flex;
             justify-content: space-evenly;
