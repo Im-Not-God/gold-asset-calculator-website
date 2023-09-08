@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\APIController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
@@ -54,7 +55,7 @@ Route::post('/transaction/delete', [TransactionController::class, 'delete']);
 
 
 Route::view('/goldprice', 'goldprice');
-Route::get('/goldprice_qm', [GoldPriceController::class, 'index']);
+Route::get('/goldprice_qm', [APIController::class, 'getQMData']);
 
 Route::get('/plan', [PlanController::class, 'getAll']);
 

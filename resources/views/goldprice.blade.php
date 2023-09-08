@@ -190,10 +190,7 @@
         });
 
         function getPackagePrice(currencyCode, packageCode) {
-            $.get('/goldprice_qm', {
-                currencyCode: currencyCode,
-                packageCode: packageCode,
-            }, function(data) {
+            $.get('/goldprice_qm', function(data) {
                 // handle success response from server
                 PackagePriceServiceSucceededs(data);
             }).fail(returnGetPackagePriceResult);
