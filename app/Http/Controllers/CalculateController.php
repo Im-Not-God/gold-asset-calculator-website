@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Transaction;
-
+use Illuminate\Support\Facades\Validator;
 
 class CalculateController extends Controller
 {
@@ -179,13 +179,7 @@ class CalculateController extends Controller
 
     public function output(Request $req)
     {
-        $req->validate([
-            'buyDate' => ['required', 'date'],
-            'goldPrice' => ['required', 'numeric', 'gt:0'],
-            'downpayment_USD' => ['required', 'numeric', 'gt:0'],
-            'convertPercent' => ['required', 'numeric', 'min:0'],
-            'managementFeePercent' => ['required', 'numeric', 'min:0'],
-        ]);
+        $this->validator($req->all())->validate();
         $result = $this->calc($req);
         //return $req;
         return view("calculator", $result);
@@ -270,8 +264,18 @@ class CalculateController extends Controller
         return view('report', ['data' => $transactions, 'cdata' => $this->constantData, 'result' => $results, 'summary' => $sum, "fromUrl" => $fromUrl]);
     }
 
-    public function portfolioCalculateHandle(){
 
+    protected function validator(array $data)
+    {
+        return Validator::make($data, [
+            'buyDate' => ['required', 'date'],
+            'goldPrice' => ['required', 'numeric', 'gt:0'],
+            'downpayment' => ['required', 'numeric', 'gt:0'],
+            'convertPercent' => ['required', 'numeric', 'min:0'],
+            'managementFeePercent' => ['required', 'numeric', 'min:0'],
+        ])->setAttributeNames([
+            'convertPercent' => 'convert rate',
+            'managementFeePercent' => 'annual management fee',
+        ]);
     }
-
 }

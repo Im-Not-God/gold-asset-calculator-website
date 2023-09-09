@@ -47,7 +47,7 @@
                 <tbody class="align-middle">
                     <tr>
                         <td>
-                            Number of portfolio
+                            {{__("Number of portfolio")}}
                         </td>
                         @foreach ($details as $detail)
                         <td>
@@ -57,11 +57,21 @@
                     </tr>
                     <tr>
                         <td>
-                            Number of transactions in each portfolio
+                            {{__("Number of transactions")}}
                         </td>
                         @foreach ($details as $detail)
                         <td>
                             {{$detail[1] == -1? "unlimited" : $detail[1]}}
+                        </td>
+                        @endforeach
+                    </tr>
+                    <tr>
+                        <td>
+                            {{__("Number of transactions per portfolio")}}
+                        </td>
+                        @foreach ($details as $detail)
+                        <td>
+                            {{$detail[2] == -1? "unlimited" : $detail[2]}}
                         </td>
                         @endforeach
                     </tr>

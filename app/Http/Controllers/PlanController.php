@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Validator;
 
 class PlanController extends Controller
 {
@@ -21,19 +22,37 @@ class PlanController extends Controller
 
     public function update(Request $req)
     {
-        $req->validate([
-            'price.*' => ['required', 'numeric', 'min:0'],
-            'detail0.*' => ['required', 'numeric', 'min:-1'],
-            'detail1.*' => ['required', 'numeric', 'min:-1'],
-        ]);
+        $this->validator($req->all())->validate();
+
         foreach ($req->id as $index => $id) {
             $plan = Plan::find($id);
             $plan->price = $req->price[$index];
-            $plan->detail = $req->detail0[$index].",".$req->detail1[$index];
+            $details = array();
+            foreach($req->detail as $detail){
+                $details[] = $detail[$index];
+            }
+            $plan->detail = implode(",",$details);
+            // $plan->detail = $req->detail[0][$index].",".$req->detail[1][$index].",".$req->detail[2][$index];
             $plan->updated_at = null;
             $plan->save();
         }
 
         return redirect('/admin');
+    }
+
+    protected function validator(array $data)
+    {
+        return Validator::make($data, [
+            'price.*' => ['required', 'numeric', 'min:0'],
+            'detail' => ['required', 'array'],
+            'detail.0.*' => ['required', 'numeric', 'min:-1'],
+            'detail.1.*' => ['required', 'numeric', 'min:-1'],
+            'detail.2.*' => ['required', 'numeric', 'min:-1'],
+        ])->setAttributeNames([
+            'price.*' => 'price',
+            'detail.0.*' => 'number of portfolio',
+            'detail.1.*' => 'number of transactions',
+            'detail.2.*' => 'number of transactions per portfolio',
+        ]);
     }
 }
