@@ -26,15 +26,37 @@ class SubscriptionController extends Controller
         }
     }
 
-    public function portfolio(){
-
+    public static function portfoliosLimit(){
+        $plan = self::index();
+        $numOfPortfolios = User::find(Auth::id())->portfolios->count();
+        if(explode(",", $plan->detail)[0] - $numOfPortfolios <= 0){
+            return true;
+        }
+        return false;
     }
 
-    public function transactions(){
-        
+    public static function transactionsLimit(){
+        $plan = self::index();
+        $numOfTransactions = User::find(Auth::id())->transactions->count();
+        if(explode(",", $plan->detail)[1] - $numOfTransactions  <= 0){
+            return true;
+        }
+        return false;
     }
 
-    public function transactionsPerPortfolio(){
+    public static function transactionsPerPortfolioLimit($numOfTransactions){
+        $plan = self::index();
+        if(explode(",", $plan->detail)[2] - $numOfTransactions  < 0){
+            return true;
+        }
+        return false;
+    }
 
+    public function transactionsPerPortfolioLimit_req(Request $req){
+        $plan = self::index();
+        if(explode(",", $plan->detail)[2] - $req->numOfTransactions  < 0){
+            return true;
+        }
+        return false;
     }
 }

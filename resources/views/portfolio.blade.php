@@ -219,10 +219,10 @@
                     <h1 class="modal-title fs-5" id="staticBackdropLabel">{{__('Add portfolio')}}</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form method="post" action="/portfolio/add">
+                <form method="post" action="/portfolio/add" id="addModalForm">
                     @csrf
                     <div class="modal-body">
-
+                        @if(!$portfoliosLimit)
                         <div class="mb-3 row">
                             <div class="col">
                                 <label for="date" class="col-form-label">{{__('Type')}}:</label>
@@ -251,11 +251,25 @@
                             </table>
 
                         </div>
-
+                        @else
+                        <div class="alert alert-warning d-flex align-items-center" role="alert">
+                            <span class="material-symbols-outlined">
+                                warning
+                            </span>
+                            <div class="ms-1">
+                                {{__('Exceeded the limit')}}
+                            </div>
+                        </div>
+                        <p>{{__('If you wish to continue, please consider upgrading your subscription plan or deleting unnecessary data.')}}</p>
+                        @endif
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{__("Close")}}</button>
-                        <button type="submit" class="btn btn-warning " id="addModal-AddBtn" disabled>{{__("Add")}}</button>
+                        @if(!$portfoliosLimit)
+                        <button type="button" class="btn btn-warning " id="addModal-AddBtn" disabled>{{__("Add")}}</button>
+                        @else
+                        <a href="/plan" class="btn btn-warning">{{__("Upgrade")}}</a>
+                        @endif
                     </div>
                 </form>
             </div>
@@ -298,7 +312,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{__("Close")}}</button>
-                        <button type="submit" class="btn btn-warning">{{__("Update")}}</button>
+                        <button type="button" class="btn btn-warning" id="updateBtn">{{__("Update")}}</button>
                     </div>
                 </form>
             </div>
@@ -328,6 +342,34 @@
         </div>
     </div>
 
+    <!-- warningModal -->
+    <div class="modal fade" id="warningModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">{{__('Warning')}}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning d-flex align-items-center" role="alert">
+                        <span class="material-symbols-outlined">
+                            warning
+                        </span>
+                        <div class="ms-1">
+                            {{__('Exceeded the limit')}}
+                        </div>
+                    </div>
+                    <p>{{__('If you wish to continue, please consider upgrading your subscription plan or deleting unnecessary data.')}}</p>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{__("Close")}}</button>
+                    <a href="/plan" class="btn btn-warning">{{__("Upgrade")}}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         $("#checkAll").click(function() {
             $(".checkBox").prop('checked', $(this).prop('checked'));
@@ -340,7 +382,31 @@
         });
 
         $(document).ready(function() {
-            changeBtnState()
+            changeBtnState();
+
+            $('.modal').on('hidden.bs.modal', function(event) {
+        $(this).removeClass( 'fv-modal-stack' );
+        $('body').data( 'fv_open_modals', $('body').data( 'fv_open_modals' ) - 1 );
+    });
+
+    $('.modal').on('shown.bs.modal', function (event) {
+        // keep track of the number of open modals
+        if ( typeof( $('body').data( 'fv_open_modals' ) ) == 'undefined' ) {
+            $('body').data( 'fv_open_modals', 0 );
+        }
+
+        // if the z-index of this modal has been set, ignore.
+        if ($(this).hasClass('fv-modal-stack')) {
+            return;
+        }
+
+        $(this).addClass('fv-modal-stack');
+        $('body').data('fv_open_modals', $('body').data('fv_open_modals' ) + 1 );
+        $(this).css('z-index', 1040 + (10 * $('body').data('fv_open_modals' )));
+        $('.modal-backdrop').not('.fv-modal-stack').css('z-index', 1039 + (10 * $('body').data('fv_open_modals')));
+        $('.modal-backdrop').not('fv-modal-stack').addClass('fv-modal-stack'); 
+
+    });        
         });
 
         function changeBtnState() {
@@ -545,6 +611,7 @@
         });
 
         $('#addModal').on('shown.bs.modal', function(e) {
+            @if(!$portfoliosLimit)
             $(this).find(".transactionsTable").after(`
                 <div id='miniLoader' style="display: none;">
                     <img src="/images/logo-loading.svg" alt="Loading" width="50">
@@ -552,6 +619,7 @@
                 </div>
             `);
             getTransactionData($(this), $(".typeSelection").val());
+            @endif
         })
 
 
@@ -759,6 +827,37 @@
                 localStorage.removeItem(`portfolio_page${i}`);
             }
         });
+
+        $('#addModal-AddBtn, #updateBtn').on('click', function() {
+            checkTransactionLimit($(this));
+        });
+
+        function checkTransactionLimit(btn) {
+            $('#addModal-AddBtn').attr("disable", true);
+            $.post("/portfolio/checkLimit", {
+                    numOfTransactions: $(".checkBox2:checked").length,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                function(data, status) {
+                    if (status == "success") {
+                        if (data) {
+                            // alert("Exceed the limit");
+                            $("#warningModal").modal('show'); 
+                           
+                            return false;
+                        } else {
+                            $('#addModal-AddBtn').attr("disable", false);
+                            btn.parents("form").submit();
+                        }
+
+                    } else {
+                        console.log("error: not found");
+                    }
+                    $('#addModal-AddBtn').attr("disable", false);
+                    btn.parents("form").submit();
+                }
+            );
+        }
     </script>
 </body>
 

@@ -129,6 +129,5 @@ Route::get('/api/qmdata', function(){
 });
 
 
-Route::get('/sub', [SubscriptionController::class, "index"]);
-
 Route::post('/plan', [SubscriptionController::class, "subscribePlan"])->middleware("auth");
+Route::post('/portfolio/checkLimit', [SubscriptionController::class, "transactionsPerPortfolioLimit_req"])->middleware("auth");

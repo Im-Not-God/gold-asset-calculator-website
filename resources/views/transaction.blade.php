@@ -209,7 +209,7 @@
                 <form method="post" action="/transaction/add">
                     @csrf
                     <div class="modal-body">
-
+                        @if(!$transactionsLimit)
                         <div class="mb-3">
                             <label for="date" class="col-form-label">{{__('Date')}}:</label>
                             <input type="date" class="form-control @error('buyDate') is-invalid @enderror" id="date" name="buyDate" required>
@@ -278,10 +278,25 @@
                             </span>
                             @enderror
                         </div>
+                        @else
+                        <div class="alert alert-warning d-flex align-items-center" role="alert">
+                            <span class="material-symbols-outlined">
+                                warning
+                            </span>
+                            <div class="ms-1">
+                                {{__('Exceeded the limit')}}
+                            </div>
+                        </div>
+                        <p>{{__('If you wish to continue, please consider upgrading your subscription plan or deleting unnecessary data.')}}</p>
+                        @endif
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{__("Close")}}</button>
+                        @if(!$transactionsLimit)
                         <button type="submit" class="btn btn-warning">{{__("Add")}}</button>
+                        @else
+                        <a href="/plan" class="btn btn-warning">{{__("Upgrade")}}</a>
+                        @endif
                     </div>
                 </form>
             </div>

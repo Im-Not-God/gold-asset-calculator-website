@@ -17,40 +17,43 @@ class TransactionController extends Controller
         $validationFail = session()->has('validationFail') ? session('validationFail') : 'false';
         $data = User::find(Auth::id())->transactions()->paginate(10);
         $getCurrentGoldPrice = APIController::getGoldPrice()["goldPrice"] / 31.1035;
-        return view('transaction', ['data' => $data, 'currentGoldPrice' => $getCurrentGoldPrice, 'validationFail' => $validationFail]);
+        $transactionsLimit = SubscriptionController::transactionsLimit();
+        return view('transaction', ['data' => $data, 'currentGoldPrice' => $getCurrentGoldPrice, 'validationFail' => $validationFail, 'transactionsLimit'=>$transactionsLimit]);
     }
 
     public function add(Request $req)
     {
-        $validator = $this->validator($req->all());
+        if (!SubscriptionController::transactionsLimit()) {
+            $validator = $this->validator($req->all());
 
-        session()->flash('validationFail', $validator->fails() ? 'true' : 'false');
+            session()->flash('validationFail', $validator->fails() ? 'true' : 'false');
 
-        $validator->validate();
+            $validator->validate();
 
-        $exchangeRate = 1;
+            $exchangeRate = 1;
 
-        if ($req->currency == "MYR")
-            $exchangeRate = APIController::getExchange($req->currency, $req->buyDate)['rate'];
+            if ($req->currency == "MYR")
+                $exchangeRate = APIController::getExchange($req->currency, $req->buyDate)['rate'];
 
-        if ($req->type == "Other") {
-            Transaction::create([
-                'user_id' => Auth::id(),
-                'type' => $req->type,
-                'downpayment' => number_format($req->downpayment / $exchangeRate, 2, '.', ''),
-                'gold_price' => number_format($req->goldPrice / $exchangeRate, 2, '.', ''),
-                'convert_percent' => $req->convertPercent,
-                'management_fee_percent' => $req->managementFeePercent,
-                'created_at' => $req->buyDate,
-            ]);
-        } else {
-            Transaction::create([
-                'user_id' => Auth::id(),
-                'type' => $req->type,
-                'downpayment' => number_format($req->downpayment / $exchangeRate, 2, '.', ''),
-                'gold_price' => number_format($req->goldPrice / $exchangeRate, 2, '.', ''),
-                'created_at' => $req->buyDate,
-            ]);
+            if ($req->type == "Other") {
+                Transaction::create([
+                    'user_id' => Auth::id(),
+                    'type' => $req->type,
+                    'downpayment' => number_format($req->downpayment / $exchangeRate, 2, '.', ''),
+                    'gold_price' => number_format($req->goldPrice / $exchangeRate, 2, '.', ''),
+                    'convert_percent' => $req->convertPercent,
+                    'management_fee_percent' => $req->managementFeePercent,
+                    'created_at' => $req->buyDate,
+                ]);
+            } else {
+                Transaction::create([
+                    'user_id' => Auth::id(),
+                    'type' => $req->type,
+                    'downpayment' => number_format($req->downpayment / $exchangeRate, 2, '.', ''),
+                    'gold_price' => number_format($req->goldPrice / $exchangeRate, 2, '.', ''),
+                    'created_at' => $req->buyDate,
+                ]);
+            }
         }
 
         return redirect('/transaction');

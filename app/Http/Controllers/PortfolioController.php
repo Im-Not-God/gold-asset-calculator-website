@@ -16,7 +16,8 @@ class PortfolioController extends Controller
         $this->checkData();
         $portfolios = User::find((Auth::id()))->portfolios()->paginate(10);
         $currentGoldPrice = APIController::getGoldPrice()["goldPrice"] / 31.1035;
-        return view('portfolio', ['data' => $portfolios]);
+        $portfoliosLimit = SubscriptionController::portfoliosLimit();
+        return view('portfolio', ['data' => $portfolios, "portfoliosLimit" => $portfoliosLimit]);
     }
 
     public function checkData()
@@ -49,20 +50,24 @@ class PortfolioController extends Controller
 
     public function add(Request $req)
     {
-        $portfolioId = Portfolio::create([
-            'user_id' => Auth::id(),
-            'type' => $req->type,
-            'num_of_transactions' => count($req->transactions),
-        ])->id;
+        if (!SubscriptionController::portfoliosLimit() && !SubscriptionController::transactionsPerPortfolioLimit(count($req->transactions))) {
+            $portfolioId = Portfolio::create([
+                'user_id' => Auth::id(),
+                'type' => $req->type,
+                'num_of_transactions' => count($req->transactions),
+            ])->id;
 
-        Portfolio::find($portfolioId)->transactions()->attach($req->transactions);
+            Portfolio::find($portfolioId)->transactions()->attach($req->transactions);
+        }
 
         return redirect('/portfolio');
     }
 
     public function update(Request $req)
     {
-        Portfolio::find($req->id)->transactions()->sync($req->transactions);
+        if (!SubscriptionController::transactionsPerPortfolioLimit(count($req->transactions))) {
+            Portfolio::find($req->id)->transactions()->sync($req->transactions);
+        }
 
         return redirect('/portfolio');
     }
@@ -91,7 +96,7 @@ class PortfolioController extends Controller
     public function delete(Request $req)
     {
         // $portfolios = Portfolio::query();
-        
+
         foreach ($req->portfolios as $value) {
             // $portfolios->orWhere('id', '=', $value);
 
