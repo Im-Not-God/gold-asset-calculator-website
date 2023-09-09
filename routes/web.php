@@ -69,7 +69,8 @@ Route::post("/portfolio/getTransactions", [PortfolioController::class, 'getTrans
 Route::post('/portfolio/add', [PortfolioController::class, 'add'])->middleware("auth");
 Route::post('/portfolio/update', [PortfolioController::class, 'update'])->middleware("auth");
 Route::post('/portfolio/delete', [PortfolioController::class, 'delete'])->middleware("auth");
-Route::post('/portfolio/delete/showtransactions', [PortfolioController::class, 'getOnlyTransactionsUnderPortfolio'])->middleware("auth");
+Route::post('/portfolio/delete/showtransactions', [PortfolioController::class, 'getOnlyTransactionsUnderPortfolioDelete'])->middleware("auth");
+Route::post('/portfolio/edit/showtransactions', [PortfolioController::class, 'getOnlyTransactionsUnderPortfolioEdit'])->middleware("auth");
 Route::post('/portfolio/report', [PortfolioController::class, 'calculateHandler'])->middleware("auth");
 
 

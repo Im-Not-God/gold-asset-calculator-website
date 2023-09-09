@@ -273,6 +273,7 @@
                     @csrf
                     <div class="modal-body">
                         <input type="hidden" id="id" name="id">
+                        <input type="hidden" id="id" name="type" value="">
                         <!-- <div class="mb-3 row">
                             <div class="col">
                                 <label for="date" class="col-form-label">{{__('Type')}}:</label>
@@ -359,10 +360,6 @@
             }
         }
 
-        function calculateBtn() {
-
-        }
-
         //checkbox control 
         $(".clickable").on("click", function(e) {
             var checkbox = $(this).children().find(".checkBox");
@@ -435,7 +432,7 @@
 
                     </div>
             `);
-            getTransactionDataUnderPortfolio($("#deleteModal"), type, id);
+            getTransactionDataUnderPortfolioDelete($("#deleteModal"), type, id);
         })
 
         $("#deleteSelectedBtn").on("click", function() {
@@ -485,7 +482,7 @@
                         </div>
                     </div>
                 `);
-                getTransactionDataUnderPortfolio($(`div#${id}`), type, id);
+                getTransactionDataUnderPortfolioDelete($(`div#${id}`), type, id);
             });
         });
 
@@ -524,7 +521,27 @@
             }
         }
 
-        $('#addModal, #editModal').on('show.bs.modal', function(e) {
+        $('#editModal').on("shown.bs.modal", function() {
+            $(this).find(".transactionsTable").after(`
+                <div id='miniLoader' style="display: none;">
+                    <img src="/images/logo-loading.svg" alt="Loading" width="50">
+                    <p class="text-warning mt-2 mb-0">Loading ...</p>
+                </div>
+            `);
+            getTransactionData($(this), $(".typeSelection").val());
+
+            let id = $(this).find(".modal-title span").text();
+            getTransactionDataUnderPortfolioEdit($(this), id)
+            //grab data po
+        });
+
+
+        $('.edit-btn').on("click", function() {
+            let id = $(this).attr("data-bs-id");
+            $('#editModal').find(".modal-title span").text(id);
+        });
+
+        $('#addModal').on('show.bs.modal', function(e) {
             $(this).find(".transactionsTable").after(`
                 <div id='miniLoader' style="display: none;">
                     <img src="/images/logo-loading.svg" alt="Loading" width="50">
@@ -542,7 +559,7 @@
 
 
         $(".typeSelection").on("change", function() {
-            getTransactionData($(this), $(this).val());
+            getTransactionData($(this).parents('#addModal'), $(this).val());
         })
 
         function getTransactionData(modal, type) {
@@ -555,6 +572,8 @@
                     hideLoading();
                     if (status == "success") {
                         if (data["transactionsData"].length) {
+
+                            modal.find(".transactionsTable tbody").html(``);
 
                             let currentGoldPrice = data["currentGoldPrice"];
 
@@ -582,9 +601,7 @@
                                         ${goldPriceGapHtml}
                                     </tr>
                                     `);
-
-                            })
-
+                            });
                         } else {
                             modal.find(".transactionsTable tbody").html(`
                             <tr class=''>
@@ -601,7 +618,7 @@
                 });
         }
 
-        function getTransactionDataUnderPortfolio(modal, type, portfolioID) {
+        function getTransactionDataUnderPortfolioDelete(modal, type, portfolioID) {
             showLoading();
             $.post("/portfolio/delete/showtransactions", {
                     type: type,
@@ -650,6 +667,33 @@
                             `);
                         }
 
+                    } else {
+                        console.log("error: not found");
+                    }
+                });
+        }
+
+        function getTransactionDataUnderPortfolioEdit(modal, portfolioID) {
+            showLoading();
+            $.post("/portfolio/edit/showtransactions", {
+                    portfolioID: portfolioID,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                function(data, status) {
+                    hideLoading();
+                    if (status == "success") {
+                        if (data["transactionsData"].length) {
+
+                            data["transactionsData"].forEach(function(transactionId, index) {
+                                modal.find(".transactionsTable .checkBox2:not(:checked)").each(function() {
+                                    console.log($(this).val());
+                                    if ($(this).val() == transactionId){
+                                        $(this).prop('checked', true);
+                                        return false;
+                                    }
+                                })
+                            })
+                        }
                     } else {
                         console.log("error: not found");
                     }

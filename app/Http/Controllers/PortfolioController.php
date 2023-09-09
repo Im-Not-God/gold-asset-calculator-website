@@ -80,7 +80,7 @@ class PortfolioController extends Controller
         return redirect('/portfolio');
     }
 
-    public function getOnlyTransactionsUnderPortfolio(Request $req)
+    public function getOnlyTransactionsUnderPortfolioDelete(Request $req)
     {
         if ($req->type == "QM") {
             $currentGoldPrice = APIController::getQMData()["goldPrice"];
@@ -94,22 +94,30 @@ class PortfolioController extends Controller
         ];
     }
 
+    public function getOnlyTransactionsUnderPortfolioEdit(Request $req)
+    {
+        return [
+            "transactionsData" => Portfolio::find($req->portfolioID)->transactions()->allRelatedIds()
+        ];
+    }
+
     public function delete(Request $req)
     {
         // $portfolios = Portfolio::query();
-        foreach ($req->portfolios as $value) {
-            // $portfolios->orWhere('id', '=', $value);
+        print_r($req->all());
+        // foreach ($req->portfolios as $value) {
+        //     // $portfolios->orWhere('id', '=', $value);
 
-            Portfolio::find($value)->transactions()->detach();
-            Portfolio::find($value)->delete();
-        }
-        // $portfolios->transactions()->detach();
+        //     Portfolio::find($value)->transactions()->detach();
+        //     Portfolio::find($value)->delete();
+        // }
+        // // $portfolios->transactions()->detach();
 
-        // $portfolios->delete();
+        // // $portfolios->delete();
 
 
 
-        return redirect('/portfolio');
+        // return redirect('/portfolio');
     }
 
 
