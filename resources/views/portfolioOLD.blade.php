@@ -607,13 +607,10 @@
                     <p class="text-warning mt-2 mb-0">Loading ...</p>
                 </div>
             `);
-            let deferred1 = getTransactionData($(this), $('#editModal').find("input[name='type']").val());
+            getTransactionData($(this), $('#editModal').find("input[name='type']").val());
 
             let id = $(this).find(".modal-title span").text();
-
-            $.when(deferred1).done(function() {
-                getTransactionDataUnderPortfolioEdit($("#editModal"), id)
-            })
+            getTransactionDataUnderPortfolioEdit($(this), id)
         });
 
         $('#addBtn').on("click", function() {
@@ -645,13 +642,12 @@
 
         function getTransactionData(modal, type) {
             showLoading();
-            return $.post("/portfolio/getTransactions", {
+            $.post("/portfolio/getTransactions", {
                     type: type,
                     _token: $('meta[name="csrf-token"]').attr('content')
                 },
                 function(data, status) {
-                    if(modal != $("#editModal"))
-                        hideLoading();
+                    hideLoading();
                     if (status == "success") {
                         if (data["transactionsData"].length) {
 
@@ -757,6 +753,7 @@
         }
 
         function getTransactionDataUnderPortfolioEdit(modal, portfolioID) {
+            showLoading();
             $.post("/portfolio/edit/showtransactions", {
                     portfolioID: portfolioID,
                     _token: $('meta[name="csrf-token"]').attr('content')
@@ -765,6 +762,7 @@
                     hideLoading();
                     if (status == "success") {
                         if (data["transactionsData"].length) {
+
                             data["transactionsData"].forEach(function(transactionId, index) {
                                 modal.find(".transactionsTable .checkBox2:not(:checked)").each(function() {
                                     console.log($(this).val());
