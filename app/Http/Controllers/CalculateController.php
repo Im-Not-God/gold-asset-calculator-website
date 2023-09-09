@@ -227,14 +227,9 @@ class CalculateController extends Controller
         ]);
     }
 
-    public function transaction_calc(Request $req)
+    public function transaction_calc($transactions, $fromUrl)
     {
         // $cdata = $this->index(1);
-        $transactions = Transaction::query();
-        foreach ($req->transactions as $value) {
-            $transactions->orWhere('id', '=', $value);
-        }
-        $transactions = $transactions->get();
 
         $results = [];
         $sum_totalHoldingGold = 0;
@@ -272,7 +267,7 @@ class CalculateController extends Controller
             $sum_downpayment_USD
         ];
 
-        return view('report', ['data' => $transactions, 'cdata' => $this->constantData, 'result' => $results, 'summary' => $sum]);
+        return view('report', ['data' => $transactions, 'cdata' => $this->constantData, 'result' => $results, 'summary' => $sum, "fromUrl" => $fromUrl]);
     }
 
     public function portfolioCalculateHandle(){

@@ -51,6 +51,7 @@ Route::get('/transaction', [TransactionController::class, 'getAll'])->middleware
 Route::post('/transaction/add', [TransactionController::class, 'add'])->middleware("auth");
 Route::post('/transaction/update', [TransactionController::class, 'update'])->middleware("auth");
 Route::post('/transaction/delete', [TransactionController::class, 'delete'])->middleware("auth");
+Route::post('/transaction/report', [TransactionController::class, 'calculateHandler'])->middleware("auth");
 
 
 Route::view('/goldprice', 'goldprice');
@@ -68,6 +69,9 @@ Route::post("/portfolio/getTransactions", [PortfolioController::class, 'getTrans
 Route::post('/portfolio/add', [PortfolioController::class, 'add'])->middleware("auth");
 Route::post('/portfolio/update', [PortfolioController::class, 'update'])->middleware("auth");
 Route::post('/portfolio/delete', [PortfolioController::class, 'delete'])->middleware("auth");
+Route::post('/portfolio/delete/showtransactions', [PortfolioController::class, 'getOnlyTransactionsUnderPortfolio'])->middleware("auth");
+Route::post('/portfolio/report', [PortfolioController::class, 'calculateHandler'])->middleware("auth");
+
 
 Route::get('set-locale/{locale}', function ($locale) {
     if (!in_array($locale, ['en', 'zh_CN', 'ms'])) {

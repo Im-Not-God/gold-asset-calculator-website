@@ -80,7 +80,7 @@
         </nav>
 
         <h3>{{__('Transaction List')}}</h3>
-        <form method="post" action="/report" id="transactionList" onsubmit="return beforeCalculate()">
+        <form method="post" action="/transaction/report" id="transactionList" onsubmit="return beforeCalculate()">
             @csrf
 
             <button type="button" class="btn btn-secondary" id="clearBtn">{{__('Clear selection')}}</button>

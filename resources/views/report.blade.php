@@ -56,7 +56,7 @@
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">{{_("Home")}}</a></li>
-                <li class="breadcrumb-item"><a href="/transaction">{{_("Transaction")}}</a></li>
+                <li class="breadcrumb-item"><a href="/{{$fromUrl}}">{{_(ucfirst($fromUrl))}}</a></li>
                 <li class="breadcrumb-item active" aria-current="page"><span style="color:gold">{{_("Report")}}</span></li>
             </ol>
         </nav>

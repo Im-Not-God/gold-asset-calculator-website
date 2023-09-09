@@ -105,7 +105,7 @@
         </nav>
 
         <h3>{{__('Portfolio List')}}</h3>
-        <form method="post" action="/report">
+        <form method="post" action="/portfolio/report">
             @csrf
 
             <button type="button" class="btn btn-warning" id="addBtn" data-bs-toggle="modal" data-bs-target="#addModal">{{__('Add')}}</button>
@@ -273,7 +273,7 @@
                     @csrf
                     <div class="modal-body">
                         <input type="hidden" id="id" name="id">
-                        <div class="mb-3 row">
+                        <!-- <div class="mb-3 row">
                             <div class="col">
                                 <label for="date" class="col-form-label">{{__('Type')}}:</label>
                                 <select class="form-select typeSelection" name="type">
@@ -281,7 +281,7 @@
                                     <option value="Other">Other</option>
                                 </select>
                             </div>
-                        </div>
+                        </div> -->
 
                         <div class="mb-3 overflow-auto" id="transactionsTableDiv" style="position: relative; max-height: 58vh;">
 
@@ -354,12 +354,12 @@
                 $('#Calculate').prop('disabled', true)
                 $('#deleteSelectedBtn').prop('disabled', true)
             }
-            if($('input[type=checkbox]:checked').length > 1){
+            if ($('input[type=checkbox]:checked').length > 1) {
                 $('#Calculate').prop('disabled', true);
             }
         }
 
-        function calculateBtn(){
+        function calculateBtn() {
 
         }
 
@@ -396,46 +396,6 @@
             }
         });
 
-        const editModal = document.getElementById('editModal');
-        if (editModal) {
-            editModal.addEventListener('show.bs.modal', event => {
-                // Button that triggered the modal
-                const button = event.relatedTarget;
-                // Extract info from data-bs-* attributes
-                const id = button.getAttribute('data-bs-id');
-                const date = button.getAttribute('data-bs-date');
-                const type = button.getAttribute('data-bs-type');
-                const convertPercent = button.getAttribute('data-convertPercent');
-                const managementFeePercent = button.getAttribute('data-managementFeePercent');
-                const gold = button.getAttribute('data-bs-gold');
-                const downpayment = button.getAttribute('data-bs-downpayment');
-                // If necessary, you could initiate an Ajax request here
-                // and then do the updating in a callback.
-
-                // Update the modal's content.
-                editModal.querySelector('.modal-title span').textContent = id;
-                editModal.querySelector('.modal-body input[id="id"]').value = id;
-                editModal.querySelector('.modal-body input[id="date_"]').value = date;
-                editModal.querySelector('.modal-body .typeSelection').value = type;
-                editModal.querySelector('.modal-body input[id="gold_price_"]').value = gold;
-                editModal.querySelector('.modal-body input[id="downpayment_"]').value = downpayment;
-
-                editModal.querySelector('.modal-body .currencySelection').value = "USD";
-                editModal.querySelector('.modal-body .label_currency').textContent = "USD";
-
-                if (type == "Other") {
-                    editModal.querySelector('.modal-body .percent').removeAttribute("hidden");
-                    editModal.querySelector('.modal-body .percent input').setAttribute("min", 0);
-                    editModal.querySelector('.modal-body .percent input[name="convertPercent"]').value = convertPercent;
-                    editModal.querySelector('.modal-body .percent input[name="managementFeePercent"]').value = managementFeePercent;
-                } else {
-                    editModal.querySelector('.modal-body .percent').setAttribute("hidden", true);
-                    editModal.querySelector('.modal-body .percent input').removeAttribute("min");
-                    editModal.querySelector('.modal-body .percent input').removeAttribute("required", false);
-                }
-            })
-        }
-
         $(".delete-btn").on("click", function() {
             $("#deleteModal .modal-body").html("");
             let data = $(this).parent().parent().find(".data");
@@ -445,7 +405,6 @@
             let num = data[3].textContent;
 
             $("#deleteModal .modal-body").append(`
-                    <input type="hidden" id="id" name="portfolios[]" value=${id}>
                     <p id="id">ID: ${id}</p>
                     <p id="date">Date: ${date}</p>
                     <p id="type">Type: ${type}</p>
@@ -457,7 +416,26 @@
                             </span>
                         </button>
                     </div>
+
+                    <div class="mb-3 overflow-auto" id="transactionsTableDiv" style="position: relative; max-height: 58vh;" hidden>
+
+                        <table class="table table-dark transactionsTable table-hover">
+                            <thead>
+                                <tr>
+                                    <th>{{__('ID')}}</th>
+                                    <th>{{__('Date')}}</th>
+                                    <th>{{__('Type')}}</th>
+                                    <th>{{__('Gold Price (USD/g)')}}</th>
+                                    <th>{{__('Downpayment (USD)')}}</th>
+                                    <th>{{__('Gold Price Gap(USD/g)')}}</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+
+                    </div>
             `);
+            getTransactionDataUnderPortfolio($("#deleteModal"), type, id);
         })
 
         $("#deleteSelectedBtn").on("click", function() {
@@ -475,19 +453,39 @@
                 const num = data[3].textContent;
 
                 $("#deleteModal .modal-body").append(`
-                    <input type="hidden" id="id" name="portfolios[]" value=${id}>
                     <p id="id">ID: ${id}</p>
                     <p id="date">Date: ${date}</p>
                     <p id="type">Type: ${type}</p>
-                    <div class="d-flex">
-                        <p id="numOfTransactions" class="clickableP">Num of transactions: ${num}</p>&nbsp;
-                        <button type="button" class="btn expand-btn" title="{{__('expand more')}}">
-                            <span class="material-symbols-outlined">
-                                expand_more
-                            </span>
-                        </button>
+                    <div id="${id}">
+                        <div class="d-flex">
+                            <p id="numOfTransactions" class="clickableP">Num of transactions: ${num}</p>&nbsp;
+                            <button type="button" class="btn expand-btn" title="{{__('expand more')}}">
+                                <span class="material-symbols-outlined">
+                                    expand_more
+                                </span>
+                            </button>
+                        </div>
+
+                        <div class="mb-3 overflow-auto" id="transactionsTableDiv" style="position: relative; max-height: 58vh;" hidden>
+
+                            <table class="table table-dark transactionsTable table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>{{__('ID')}}</th>
+                                        <th>{{__('Date')}}</th>
+                                        <th>{{__('Type')}}</th>
+                                        <th>{{__('Gold Price (USD/g)')}}</th>
+                                        <th>{{__('Downpayment (USD)')}}</th>
+                                        <th>{{__('Gold Price Gap(USD/g)')}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+
+                        </div>
                     </div>
                 `);
+                getTransactionDataUnderPortfolio($(`div#${id}`), type, id);
             });
         });
 
@@ -503,14 +501,15 @@
                 console.log("more");
                 expandBtn.children().html("expand_less");
                 expandBtn.attr("title", "{{__('expand less')}}");
+                expandBtn.parent().parent().find("#transactionsTableDiv").attr("hidden", false);
             }
             //expand less
             else {
                 console.log("less");
                 expandBtn.children().html("expand_more");
                 expandBtn.attr("title", "{{__('expand more')}}");
+                expandBtn.parent().parent().find("#transactionsTableDiv").attr("hidden", true);
             }
-
         });
 
 
@@ -535,7 +534,7 @@
             getTransactionData($(this), $(".typeSelection").val());
         })
 
-       
+
         $('#addModal, #editModal').on('hidden.bs.modal', function(e) {
             $("#miniLoader").remove();
             $(".transactionsTable tbody").html(``);
@@ -556,7 +555,7 @@
                     hideLoading();
                     if (status == "success") {
                         if (data["transactionsData"].length) {
-                            
+
                             let currentGoldPrice = data["currentGoldPrice"];
 
                             data["transactionsData"].forEach(function(transaction, index) {
@@ -573,15 +572,71 @@
                                 }
 
                                 modal.find(".transactionsTable tbody").append(`
-                                <tr class='clickable2'>
-                                    <td><input type="checkbox" class="checkBox2" name="transactions[]" value="${transaction.id}"></td>
-                                    <td>${transaction.id}</td>
-                                    <td>${transaction.created_at}</td>
-                                    <td >${transaction.type}</td>
-                                    <td>${transaction.gold_price}</td>
-                                    <td >${transaction.downpayment}</td>
-                                    ${goldPriceGapHtml}
-                                </tr>
+                                    <tr class='clickable2'>
+                                        <td><input type="checkbox" class="checkBox2" name="transactions[]" value="${transaction.id}"></td>
+                                        <td>${transaction.id}</td>
+                                        <td>${transaction.created_at}</td>
+                                        <td >${transaction.type}</td>
+                                        <td>${transaction.gold_price}</td>
+                                        <td >${transaction.downpayment}</td>
+                                        ${goldPriceGapHtml}
+                                    </tr>
+                                    `);
+
+                            })
+
+                        } else {
+                            modal.find(".transactionsTable tbody").html(`
+                            <tr class=''>
+                                <td colspan="7">
+                                    <p>No data</p>
+                                </td>
+                            </tr>
+                            `);
+                        }
+
+                    } else {
+                        console.log("error: not found");
+                    }
+                });
+        }
+
+        function getTransactionDataUnderPortfolio(modal, type, portfolioID) {
+            showLoading();
+            $.post("/portfolio/delete/showtransactions", {
+                    type: type,
+                    portfolioID: portfolioID,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                function(data, status) {
+                    hideLoading();
+                    if (status == "success") {
+                        if (data["transactionsData"].length) {
+
+                            let currentGoldPrice = data["currentGoldPrice"];
+
+                            data["transactionsData"].forEach(function(transaction, index) {
+
+                                let goldPriceGap = currentGoldPrice - transaction.gold_price;
+                                goldPriceGap = goldPriceGap.toFixed(2);
+                                let goldPriceGapHtml = "";
+                                if (goldPriceGap > 0) {
+                                    goldPriceGapHtml = `<td style="color: lime">${goldPriceGap} ↑</td>`;
+                                } else if (goldPriceGap < 0) {
+                                    goldPriceGapHtml = `<td style="color: red">${goldPriceGap} ↓</td>`;
+                                } else {
+                                    goldPriceGapHtml = `<td>${goldPriceGap}</td>`;
+                                }
+
+                                modal.find(".transactionsTable tbody").append(`
+                                    <tr class=''>
+                                        <td>${transaction.id}</td>
+                                        <td>${transaction.created_at}</td>
+                                        <td >${transaction.type}</td>
+                                        <td>${transaction.gold_price}</td>
+                                        <td >${transaction.downpayment}</td>
+                                        ${goldPriceGapHtml}
+                                    </tr>
                                 `);
                             })
 

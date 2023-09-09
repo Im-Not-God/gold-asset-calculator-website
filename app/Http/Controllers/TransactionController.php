@@ -87,18 +87,18 @@ class TransactionController extends Controller
             // $transactions->orWhere('id', '=', $value);
             $portfolioIDs = Transaction::find($value)->portfolios()->allRelatedIds();
             Transaction::find($value)->portfolios()->detach();
-  
-            foreach($portfolioIDs as $portfolioID){
+
+            foreach ($portfolioIDs as $portfolioID) {
                 $portfolio = Portfolio::find($portfolioID);
                 $numOfTransactions = $portfolio->transactions()->count();
-                if($numOfTransactions >0){
+                if ($numOfTransactions > 0) {
                     $portfolio->num_of_transactions = $numOfTransactions;
                     $portfolio->save();
-                }else{
+                } else {
                     $portfolio->delete();
                 }
             }
-            
+
             Transaction::find($value)->delete();
         }
         // $transactions = $transactions->delete();
@@ -115,5 +115,16 @@ class TransactionController extends Controller
             'convertPercent' => ['required', 'numeric', 'min:0'],
             'managementFeePercent' => ['required', 'numeric', 'min:0'],
         ]);
+    }
+
+    public function calculateHandler(Request $req)
+    {
+        $transactions = Transaction::query();
+        foreach ($req->transactions as $value) {
+            $transactions->orWhere('id', '=', $value);
+        }
+        $transactions = $transactions->get();
+
+        return (new CalculateController)->transaction_calc($transactions, "transaction");
     }
 }
