@@ -62,20 +62,7 @@ class PortfolioController extends Controller
 
     public function update(Request $req)
     {
-        $exchangeRate = 1;
-
-        if ($req->currency == "MYR")
-            $exchangeRate = APIController::getExchange($req->currency, $req->buyDate)['rate'];
-
-        $transaction = Transaction::find($req->id);
-        $transaction->downpayment = number_format($req->downpayment / $exchangeRate, 2, '.', '');
-        $transaction->gold_price = number_format($req->goldPrice / $exchangeRate, 2, '.', '');
-        if ($req->type == "Other") {
-            $transaction->convert_percent = $req->convertPercent;
-            $transaction->management_fee_percent = $req->managementFeePercent;
-        }
-        $transaction->created_at = $req->buyDate;
-        $transaction->save();
+        Portfolio::find($req->id)->transactions()->sync($req->transactions);
 
         return redirect('/portfolio');
     }
@@ -104,20 +91,18 @@ class PortfolioController extends Controller
     public function delete(Request $req)
     {
         // $portfolios = Portfolio::query();
-        print_r($req->all());
-        // foreach ($req->portfolios as $value) {
-        //     // $portfolios->orWhere('id', '=', $value);
+        
+        foreach ($req->portfolios as $value) {
+            // $portfolios->orWhere('id', '=', $value);
 
-        //     Portfolio::find($value)->transactions()->detach();
-        //     Portfolio::find($value)->delete();
-        // }
-        // // $portfolios->transactions()->detach();
+            Portfolio::find($value)->transactions()->detach();
+            Portfolio::find($value)->delete();
+        }
+        // $portfolios->transactions()->detach();
 
-        // // $portfolios->delete();
+        // $portfolios->delete();
 
-
-
-        // return redirect('/portfolio');
+        return redirect('/portfolio');
     }
 
 

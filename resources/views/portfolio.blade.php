@@ -272,17 +272,8 @@
                 <form method="post" action="/portfolio/update" style="display: contents;">
                     @csrf
                     <div class="modal-body">
-                        <input type="hidden" id="id" name="id">
-                        <input type="hidden" id="id" name="type" value="">
-                        <!-- <div class="mb-3 row">
-                            <div class="col">
-                                <label for="date" class="col-form-label">{{__('Type')}}:</label>
-                                <select class="form-select typeSelection" name="type">
-                                    <option value="QM">QM</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-                        </div> -->
+                        <input type="hidden" name="id" readonly>
+                        <input type="hidden" name="type" value="" readonly>
 
                         <div class="mb-3 overflow-auto" id="transactionsTableDiv" style="position: relative; max-height: 58vh;">
 
@@ -347,6 +338,10 @@
             $('#addModal-AddBtn').prop('disabled', !$(this).prop('checked'));
         });
 
+        $(document).ready(function() {
+            changeBtnState()
+        });
+
         function changeBtnState() {
             if ($('input[type=checkbox]:checked').length > 0) {
                 $('#Calculate').prop('disabled', false);
@@ -372,6 +367,10 @@
                 $("#checkAll").prop('checked', false);
             } else
                 $("#checkAll").prop('checked', true);
+
+            var options = saveCheckBoxOptionHandler();
+            console.log("save: " + JSON.stringify(options));
+
         });
 
         //transactionsTable checkbox control 
@@ -402,6 +401,7 @@
             let num = data[3].textContent;
 
             $("#deleteModal .modal-body").append(`
+                    <input type="hidden" id="id" name="portfolios[]" value=${id} readonly>
                     <p id="id">ID: ${id}</p>
                     <p id="date">Date: ${date}</p>
                     <p id="type">Type: ${type}</p>
@@ -450,6 +450,7 @@
                 const num = data[3].textContent;
 
                 $("#deleteModal .modal-body").append(`
+                    <input type="hidden" id="id" name="portfolios[]" value=${id} readonly>
                     <p id="id">ID: ${id}</p>
                     <p id="date">Date: ${date}</p>
                     <p id="type">Type: ${type}</p>
@@ -521,6 +522,12 @@
             }
         }
 
+        $('.edit-btn').on("click", function() {
+            let id = $(this).attr("data-bs-id");
+            $('#editModal').find("input[name='id']").val(id);
+            $('#editModal').find(".modal-title span").text(id);
+        });
+
         $('#editModal').on("shown.bs.modal", function() {
             $(this).find(".transactionsTable").after(`
                 <div id='miniLoader' style="display: none;">
@@ -532,16 +539,9 @@
 
             let id = $(this).find(".modal-title span").text();
             getTransactionDataUnderPortfolioEdit($(this), id)
-            //grab data po
         });
 
-
-        $('.edit-btn').on("click", function() {
-            let id = $(this).attr("data-bs-id");
-            $('#editModal').find(".modal-title span").text(id);
-        });
-
-        $('#addModal').on('show.bs.modal', function(e) {
+        $('#addModal').on('shown.bs.modal', function(e) {
             $(this).find(".transactionsTable").after(`
                 <div id='miniLoader' style="display: none;">
                     <img src="/images/logo-loading.svg" alt="Loading" width="50">
@@ -687,7 +687,7 @@
                             data["transactionsData"].forEach(function(transactionId, index) {
                                 modal.find(".transactionsTable .checkBox2:not(:checked)").each(function() {
                                     console.log($(this).val());
-                                    if ($(this).val() == transactionId){
+                                    if ($(this).val() == transactionId) {
                                         $(this).prop('checked', true);
                                         return false;
                                     }
@@ -702,6 +702,7 @@
 
         function showLoading() {
             $("#miniLoader").fadeIn();
+            $("#transactionsTableDiv").scrollTop(0);
             $("#transactionsTableDiv").addClass("overflow-hidden");
         }
 
@@ -709,6 +710,53 @@
             $("#miniLoader").fadeOut();
             $("#transactionsTableDiv").removeClass("overflow-hidden");
         }
+
+        // 存储选项到LocalStorage
+        function saveOptionsToStorage(options) {
+            localStorage.setItem("portfolio_page<?php echo $data->currentPage() ?>", JSON.stringify(options));
+        }
+
+        // 获取选项从LocalStorage
+        function getOptionsFromStorage() {
+            var options = localStorage.getItem("portfolio_page<?php echo $data->currentPage() ?>");
+            if (options)
+                return JSON.parse(options);
+            else
+                return false;
+        }
+
+        let optionsData = getOptionsFromStorage();
+
+        if (!optionsData) {
+            var options = saveCheckBoxOptionHandler();
+            console.log("new: " + JSON.stringify(options));
+        } else {
+            console.log("read: " + JSON.stringify(optionsData));
+            $("input[type='checkbox']").each(function(index) {
+                $(this).prop('checked', optionsData[$(this).val()]);
+            });
+        }
+
+        // 当用户进行选择时保存选项
+        function saveCheckBoxOptionHandler() {
+            var options = {};
+            $("input[type='checkbox']:checked").each(function() {
+                options[$(this).val()] = $(this).is(':checked');
+            })
+            saveOptionsToStorage(options);
+            return options;
+        }
+
+
+
+        let totalPage = <?php echo $data->lastPage() ?>
+
+        $("#clearBtn").on("click", function() {
+            $("input[type='checkbox']").prop('checked', false);
+            for (var i = 1; i <= totalPage; i++) {
+                localStorage.removeItem(`portfolio_page${i}`);
+            }
+        });
     </script>
 </body>
 

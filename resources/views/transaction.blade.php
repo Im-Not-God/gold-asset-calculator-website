@@ -514,6 +514,9 @@
                 $("#checkAll").prop('checked', false);
             } else
                 $("#checkAll").prop('checked', true);
+
+            var options = saveCheckBoxOptionHandler();
+            console.log("save: " + JSON.stringify(options));
         });
 
         if (@json($validationFail) == 'true') {
@@ -552,12 +555,12 @@
 
         // 存储选项到LocalStorage
         function saveOptionsToStorage(options) {
-            localStorage.setItem("page<?php echo $data->currentPage() ?>", JSON.stringify(options));
+            localStorage.setItem("transaction_page<?php echo $data->currentPage() ?>", JSON.stringify(options));
         }
 
         // 获取选项从LocalStorage
         function getOptionsFromStorage() {
-            var options = localStorage.getItem("page<?php echo $data->currentPage() ?>");
+            var options = localStorage.getItem("transaction_page<?php echo $data->currentPage() ?>");
             if (options)
                 return JSON.parse(options);
             else
@@ -567,11 +570,7 @@
         let optionsData = getOptionsFromStorage();
 
         if (!optionsData) {
-            var options = {};
-            $("input[type='checkbox']").each(function() {
-                options[$(this).val()] = $(this).is(':checked');
-            })
-            saveOptionsToStorage(options);
+            var options = saveCheckBoxOptionHandler();
             console.log("new: " + JSON.stringify(options));
         } else {
             console.log("read: " + JSON.stringify(optionsData));
@@ -581,22 +580,21 @@
         }
 
         // 当用户进行选择时保存选项
-        $("input[type='checkbox']").change(function() {
+        function saveCheckBoxOptionHandler() {
             var options = {};
-            $("input[type='checkbox']").each(function() {
+            $("input[type='checkbox']:checked").each(function() {
                 options[$(this).val()] = $(this).is(':checked');
             })
             saveOptionsToStorage(options);
-            console.log("save: " + JSON.stringify(options));
-        })
+            return options;
+        }
 
         let totalPage = <?php echo $data->lastPage() ?>
 
         $("#clearBtn").on("click", function() {
             $("input[type='checkbox']").prop('checked', false);
-
             for (var i = 1; i <= totalPage; i++) {
-                localStorage.removeItem(`page${i}`);
+                localStorage.removeItem(`transaction_page${i}`);
             }
         });
 
@@ -607,7 +605,7 @@
             // let selectedTransactionIDs = [];
 
             // for (var i = 1; i <= totalPage; i++) {
-            //     var data = JSON.parse(localStorage.getItem(`page${i}`));
+            //     var data = JSON.parse(localStorage.getItem(`transaction_page${i}`));
             //     Object.keys(data).forEach(function(key) {
             //         if (data[key] && key != 0) {
             //             selectedTransactionIDs.push(key);
