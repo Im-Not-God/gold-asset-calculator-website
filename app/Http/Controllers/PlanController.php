@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Plan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
 
@@ -17,7 +18,12 @@ class PlanController extends Controller
         foreach ($data as $plan)
             array_push($details, explode(",", $plan->detail));
 
-        return view(request()->path() == 'admin' ?  'admin.plan' : 'plan', ['data' => $data, 'details' => $details]);
+        if(Auth::check())
+            $planSubscribed = SubscriptionController::index();
+        else
+            $planSubscribed = null;
+
+        return view(request()->path() == 'admin' ?  'admin.plan' : 'plan', ['data' => $data, 'details' => $details, 'planSubscribed' => $planSubscribed]);
     }
 
     public function update(Request $req)

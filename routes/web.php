@@ -11,6 +11,7 @@ use App\Http\Controllers\GoldPriceController;
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\PortfolioController;
+use App\Http\Controllers\SubscriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -126,3 +127,8 @@ Route::get('/api/goldprice', function(){
 Route::get('/api/qmdata', function(){
     return APIController::getQMData()['data'];
 });
+
+
+Route::get('/sub', [SubscriptionController::class, "index"]);
+
+Route::post('/plan', [SubscriptionController::class, "subscribePlan"])->middleware("auth");

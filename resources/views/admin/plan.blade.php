@@ -12,7 +12,7 @@
 
     <style>
         .tick {
-            color: lime;
+            color: lime !important;
         }
 
         .gold {
@@ -51,7 +51,7 @@
                 </ul>
             </div>
             @endif
-            
+
             <div class="overflow-x-auto">
                 <table class="table table-dark text-center fs-5">
                     <thead class="align-middle">
@@ -151,6 +151,9 @@
                                 Feature A
                             </td>
                             <td class="tick">
+                                ❌
+                            </td>
+                            <td class="tick">
                                 ✔
                             </td>
                             <td class="tick">
@@ -173,6 +176,9 @@
                             <td class="tick">
                                 ✔
                             </td>
+                            <td class="tick">
+                                ✔
+                            </td>
                         </tr>
                         <tr>
                             <td>
@@ -182,7 +188,10 @@
                                 ❌
                             </td>
                             <td class="tick">
-                                ✔
+                                ❌
+                            </td>
+                            <td class="tick">
+                                ❌
                             </td>
                             <td class="tick">
                                 ✔

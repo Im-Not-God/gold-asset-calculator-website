@@ -12,7 +12,7 @@
 
     <style>
         .tick {
-            color: lime;
+            color: lime !important;
         }
 
         .gold {
@@ -39,7 +39,15 @@
                         <th>
                             <h5>{{$plan->type}}</h5>
                             <h5><span class="gold">${{$plan->price}}</span> <span class="text-muted">/month</span></h5>
-                            <a href="#" class="btn btn-primary">SELECT</a>
+                            @if($planSubscribed && $planSubscribed->id == $plan->id)
+                            <div class="bg-success">Subscribed</div>
+                            @else
+                            <form method="post" action="">
+                                @csrf
+                                <input type="hidden" name="planId" value="{{$plan->id}}" readonly>
+                                <button type="submit" class="btn btn-primary">SELECT</button>
+                            </form>
+                            @endif
                         </th>
                         @endforeach
                     </tr>
@@ -80,6 +88,9 @@
                             Feature A
                         </td>
                         <td class="tick">
+                            ❌
+                        </td>
+                        <td class="tick">
                             ✔
                         </td>
                         <td class="tick">
@@ -102,6 +113,9 @@
                         <td class="tick">
                             ✔
                         </td>
+                        <td class="tick">
+                            ✔
+                        </td>
                     </tr>
                     <tr>
                         <td>
@@ -111,7 +125,10 @@
                             ❌
                         </td>
                         <td class="tick">
-                            ✔
+                            ❌
+                        </td>
+                        <td class="tick">
+                            ❌
                         </td>
                         <td class="tick">
                             ✔

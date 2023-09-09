@@ -17,4 +17,9 @@ class Plan extends Model
         'detail',
         'updated_at',
     ];
+
+    public function user()
+    {
+        return $this->hasOne(User::class);
+    }
 }
