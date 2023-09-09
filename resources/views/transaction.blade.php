@@ -86,7 +86,7 @@
             <button type="button" class="btn btn-secondary" id="clearBtn">{{__('Clear selection')}}</button>
             <button type="button" class="btn btn-warning" id="addBtn" data-bs-toggle="modal" data-bs-target="#addModal">{{__('Add')}}</button>
             <button disabled type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" id="deleteSelectedBtn">{{__('Delete')}}</button>
-            <button disabled class="text-white btn btn-primary" type="submit" id="Calculate">{{__('Calculate report test')}}</button>
+            <button disabled class="text-white btn btn-primary ms-3" type="submit" id="Calculate">{{__('Calculate')}}</button>
 
             <div class="border-img">
                 <div class="overflow-auto mb-2" style="max-height: 280px;">
