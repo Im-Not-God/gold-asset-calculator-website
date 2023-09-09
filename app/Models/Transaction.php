@@ -23,6 +23,6 @@ class Transaction extends Model
 
     public function portfolios()
     {
-        return $this->belongsToMany(Portfolios::class);
+        return $this->belongsToMany(Portfolio::class);
     }
 }

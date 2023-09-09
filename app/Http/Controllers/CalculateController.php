@@ -127,7 +127,7 @@ class CalculateController extends Controller
     {
         switch ($transaction->type) {
             case "QM": {
-                    $result = APIController::getQMData()["GetPriceResult"];
+                    $result = APIController::getQMData()["data"]["GetPriceResult"];
                     $currentGoldPrice = $result["SpotPrice"];
                     $exchangeRate = 1;
                     $updateDT = 0;
@@ -273,6 +273,10 @@ class CalculateController extends Controller
         ];
 
         return view('report', ['data' => $transactions, 'cdata' => $this->constantData, 'result' => $results, 'summary' => $sum]);
+    }
+
+    public function portfolioCalculateHandle(){
+
     }
 
 }

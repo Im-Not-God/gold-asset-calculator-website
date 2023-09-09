@@ -118,7 +118,7 @@
                         <thead>
                             <tr>
                                 @if(sizeof($data)>0)
-                                <th><input type="checkbox" id="checkAll" name="all_transactions" value='1'></th>
+                                <th><input type="checkbox" id="checkAll" name="all_portfolios" value='1'></th>
                                 @endif
                                 <th>{{__('ID')}}</th>
                                 <th>{{__('Date')}}</th>
@@ -131,7 +131,7 @@
                             @if(sizeof($data)>0)
                             @foreach ($data as $portfolio)
                             <tr class='clickable'>
-                                <td><input type="checkbox" class="checkBox" name="transactions[]" value="{{$portfolio->id}}"></td>
+                                <td><input type="checkbox" class="checkBox" name="portfolios[]" value="{{$portfolio->id}}"></td>
                                 <td class="data">{{$portfolio->id}}</td>
                                 <td class="data">{{$portfolio->created_at}}</td>
                                 <td class="data">{{$portfolio->type}}</td>
@@ -215,10 +215,10 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">{{__('Add transaction')}}</h1>
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">{{__('Add portfolio')}}</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form method="post" action="/transaction/add">
+                <form method="post" action="/portfolio/add">
                     @csrf
                     <div class="modal-body">
 
@@ -249,17 +249,12 @@
                                 <tbody></tbody>
                             </table>
 
-                            <div id='miniLoader' style="display: none;">
-                                <img src="/images/logo-loading.svg" alt="Loading" width="50">
-                                <p class="text-warning mt-2 mb-0">Loading ...</p>
-                            </div>
-
                         </div>
 
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{__("Close")}}</button>
-                        <button type="submit" class="btn btn-warning">{{__("Add")}}</button>
+                        <button type="submit" class="btn btn-warning " id="addModal-AddBtn" disabled>{{__("Add")}}</button>
                     </div>
                 </form>
             </div>
@@ -274,7 +269,7 @@
                     <h1 class="modal-title fs-5" id="staticBackdropLabel">{{__('Edit portfolio ID')}}: <span></span></h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form method="post" action="#" style="display: contents;">
+                <form method="post" action="/portfolio/update" style="display: contents;">
                     @csrf
                     <div class="modal-body">
                         <input type="hidden" id="id" name="id">
@@ -286,6 +281,25 @@
                                     <option value="Other">Other</option>
                                 </select>
                             </div>
+                        </div>
+
+                        <div class="mb-3 overflow-auto" id="transactionsTableDiv" style="position: relative; max-height: 58vh;">
+
+                            <table class="table table-dark transactionsTable table-hover">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="checkAll2" name="all_transactions" value='1'></th>
+                                        <th>{{__('ID')}}</th>
+                                        <th>{{__('Date')}}</th>
+                                        <th>{{__('Type')}}</th>
+                                        <th>{{__('Gold Price (USD/g)')}}</th>
+                                        <th>{{__('Downpayment (USD)')}}</th>
+                                        <th>{{__('Gold Price Gap(USD/g)')}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+
                         </div>
 
                     </div>
@@ -307,7 +321,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <form method="post" action="/transaction/delete" style="display: contents;">
+                <form method="post" action="/portfolio/delete" style="display: contents;">
                     @csrf
                     <div class="modal-body">
                     </div>
@@ -324,10 +338,62 @@
     <script>
         $("#checkAll").click(function() {
             $(".checkBox").prop('checked', $(this).prop('checked'));
+            changeBtnState();
         });
 
         $("#checkAll2").click(function() {
             $(".checkBox2").prop('checked', $(this).prop('checked'));
+            $('#addModal-AddBtn').prop('disabled', !$(this).prop('checked'));
+        });
+
+        function changeBtnState() {
+            if ($('input[type=checkbox]:checked').length > 0) {
+                $('#Calculate').prop('disabled', false);
+                $('#deleteSelectedBtn').prop('disabled', false)
+            } else {
+                $('#Calculate').prop('disabled', true)
+                $('#deleteSelectedBtn').prop('disabled', true)
+            }
+            if($('input[type=checkbox]:checked').length > 1){
+                $('#Calculate').prop('disabled', true);
+            }
+        }
+
+        function calculateBtn(){
+
+        }
+
+        //checkbox control 
+        $(".clickable").on("click", function(e) {
+            var checkbox = $(this).children().find(".checkBox");
+            if (e.target != checkbox[0] && !$(e.target).hasClass("material-symbols-outlined")) {
+                checkbox.prop('checked', !checkbox.prop('checked'));
+            }
+            changeBtnState();
+
+            if ($('.checkBox:checked').length < $('.checkBox').length) {
+                $("#checkAll").prop('checked', false);
+            } else
+                $("#checkAll").prop('checked', true);
+        });
+
+        //transactionsTable checkbox control 
+        $(".transactionsTable").on("click", ".clickable2", function(e) {
+            var checkbox = $(this).children().find(".checkBox2");
+            if (e.target != checkbox[0]) {
+                checkbox.prop('checked', !checkbox.prop('checked'));
+            }
+            if ($('.checkBox2:checked').length > 0) {
+                $('#addModal-AddBtn').prop('disabled', false);
+            } else {
+                $('#addModal-AddBtn').prop('disabled', true);
+            }
+
+            if ($('.checkBox2:checked').length < $('.checkBox2').length) {
+                $("#checkAll2").prop('checked', false);
+            } else {
+                $("#checkAll2").prop('checked', true);
+            }
         });
 
         const editModal = document.getElementById('editModal');
@@ -448,47 +514,6 @@
         });
 
 
-        $(document).ready(function() {
-            $('input[type=checkbox]').change(function() {
-                changeBtnState();
-            });
-        });
-
-        function changeBtnState() {
-            if ($('input[type=checkbox]:checked').length > 0) {
-                $('#Calculate').prop('disabled', false)
-                $('#deleteSelectedBtn').prop('disabled', false)
-            } else {
-                $('#Calculate').prop('disabled', true)
-                $('#deleteSelectedBtn').prop('disabled', true)
-            }
-        }
-
-        //checkbox control 
-        $(".clickable").on("click", function(e) {
-            var checkbox = $(this).children().find(".checkBox");
-            if (e.target != checkbox[0] && !$(e.target).hasClass("material-symbols-outlined")) {
-                checkbox.prop('checked', !checkbox.prop('checked'));
-                changeBtnState();
-            }
-            if ($('.checkBox:checked').length < $('.checkBox').length) {
-                $("#checkAll").prop('checked', false);
-            } else
-                $("#checkAll").prop('checked', true);
-        });
-
-        //transactionsTable checkbox control 
-        $(".transactionsTable").on("click", ".clickable2", function(e) {
-            var checkbox = $(this).children().find(".checkBox2");
-            if (e.target != checkbox[0]) {
-                checkbox.prop('checked', !checkbox.prop('checked'));
-            }
-            if ($('.checkBox2:checked').length < $('.checkBox2').length) {
-                $("#checkAll2").prop('checked', false);
-            } else
-                $("#checkAll2").prop('checked', true);
-        });
-
         function check(input) {
             if (input.value != '' && input.value <= 0) {
                 input.setCustomValidity('The number must bigger than 0.');
@@ -500,16 +525,28 @@
             }
         }
 
-        $("#addBtn").click(function() {
-            getTransactionData($(".typeSelection").val());
+        $('#addModal, #editModal').on('show.bs.modal', function(e) {
+            $(this).find(".transactionsTable").after(`
+                <div id='miniLoader' style="display: none;">
+                    <img src="/images/logo-loading.svg" alt="Loading" width="50">
+                    <p class="text-warning mt-2 mb-0">Loading ...</p>
+                </div>
+            `);
+            getTransactionData($(this), $(".typeSelection").val());
+        })
+
+       
+        $('#addModal, #editModal').on('hidden.bs.modal', function(e) {
+            $("#miniLoader").remove();
+            $(".transactionsTable tbody").html(``);
         })
 
 
         $(".typeSelection").on("change", function() {
-            getTransactionData($(this).val());
+            getTransactionData($(this), $(this).val());
         })
 
-        function getTransactionData(type) {
+        function getTransactionData(modal, type) {
             showLoading();
             $.post("/portfolio/getTransactions", {
                     type: type,
@@ -518,10 +555,10 @@
                 function(data, status) {
                     hideLoading();
                     if (status == "success") {
-                        if (data["transactionsData"]) {
+                        if (data["transactionsData"].length) {
+                            
                             let currentGoldPrice = data["currentGoldPrice"];
 
-                            $(".transactionsTable tbody").html(``);
                             data["transactionsData"].forEach(function(transaction, index) {
 
                                 let goldPriceGap = currentGoldPrice - transaction.gold_price;
@@ -535,7 +572,7 @@
                                     goldPriceGapHtml = `<td>${goldPriceGap}</td>`;
                                 }
 
-                                $(".transactionsTable tbody").append(`
+                                modal.find(".transactionsTable tbody").append(`
                                 <tr class='clickable2'>
                                     <td><input type="checkbox" class="checkBox2" name="transactions[]" value="${transaction.id}"></td>
                                     <td>${transaction.id}</td>
@@ -549,7 +586,7 @@
                             })
 
                         } else {
-                            $(".transactionsTable tbody").html(`
+                            modal.find(".transactionsTable tbody").html(`
                             <tr class=''>
                                 <td colspan="7">
                                     <p>No data</p>
