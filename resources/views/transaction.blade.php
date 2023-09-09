@@ -200,7 +200,7 @@
 
     <!-- addModal -->
     <div class="modal fade" id="addModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="staticBackdropLabel">{{__('Add transaction')}}</h1>
@@ -305,7 +305,7 @@
 
     <!-- editModal -->
     <div class="modal fade" id="editModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="staticBackdropLabel">{{__('Edit transaction ID')}}: <span></span></h1>
@@ -392,7 +392,7 @@
 
     <!-- deleteModal -->
     <div class="modal fade" id="deleteModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="staticBackdropLabel">{{__('Are you sure to delete')}}</h1>
@@ -507,6 +507,8 @@
 
         $('input[type=checkbox]').change(function() {
             changeBtnState();
+            var options = saveCheckBoxOptionHandler();
+            console.log("save: " + JSON.stringify(options));
         });
 
         function changeBtnState() {
@@ -529,9 +531,6 @@
                 $("#checkAll").prop('checked', false);
             } else
                 $("#checkAll").prop('checked', true);
-
-            var options = saveCheckBoxOptionHandler();
-            console.log("save: " + JSON.stringify(options));
         });
 
         if (@json($validationFail) == 'true') {

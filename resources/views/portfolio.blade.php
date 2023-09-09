@@ -119,7 +119,7 @@
                         <thead>
                             <tr>
                                 @if(sizeof($data)>0)
-                                <th><input type="checkbox" id="checkAll" name="all_portfolios" value='1'></th>
+                                <th><input type="checkbox" id="checkAll" name="all_portfolios" value='0'></th>
                                 @endif
                                 <th>{{__('ID')}}</th>
                                 <th>{{__('Date')}}</th>
@@ -213,7 +213,7 @@
 
     <!-- addModal -->
     <div class="modal fade" id="addModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="staticBackdropLabel">{{__('Add portfolio')}}</h1>
@@ -238,7 +238,7 @@
                             <table class="table table-dark transactionsTable table-hover">
                                 <thead>
                                     <tr>
-                                        <th><input type="checkbox" id="checkAll2" name="all_transactions" value='1'></th>
+                                        <th><input type="checkbox" id="checkAll2" name="all_transactions" value='0'></th>
                                         <th>{{__('ID')}}</th>
                                         <th>{{__('Date')}}</th>
                                         <th>{{__('Type')}}</th>
@@ -278,7 +278,7 @@
 
     <!-- editModal -->
     <div class="modal fade" id="editModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="staticBackdropLabel">{{__('Edit portfolio ID')}}: <span></span></h1>
@@ -295,7 +295,7 @@
                             <table class="table table-dark transactionsTable table-hover">
                                 <thead>
                                     <tr>
-                                        <th><input type="checkbox" id="checkAll2" name="all_transactions" value='1'></th>
+                                        <th><input type="checkbox" id="checkAll3" name="all_transactions" value='0'></th>
                                         <th>{{__('ID')}}</th>
                                         <th>{{__('Date')}}</th>
                                         <th>{{__('Type')}}</th>
@@ -321,7 +321,7 @@
 
     <!-- deleteModal -->
     <div class="modal fade" id="deleteModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="staticBackdropLabel">{{__('Are you sure to delete')}}</h1>
@@ -344,10 +344,10 @@
 
     <!-- warningModal -->
     <div class="modal fade" id="warningModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">{{__('Warning')}}</h1>
+                    <!-- <h1 class="modal-title fs-5" id="staticBackdropLabel">{{__('Warning')}}</h1> -->
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -374,39 +374,42 @@
         $("#checkAll").click(function() {
             $(".checkBox").prop('checked', $(this).prop('checked'));
             changeBtnState();
+            var options = saveCheckBoxOptionHandler();
+            console.log("save: " + JSON.stringify(options));
         });
 
-        $("#checkAll2").click(function() {
+        $("#checkAll2, #checkAll3").click(function() {
             $(".checkBox2").prop('checked', $(this).prop('checked'));
             $('#addModal-AddBtn').prop('disabled', !$(this).prop('checked'));
         });
+        
 
         $(document).ready(function() {
             changeBtnState();
 
             $('.modal').on('hidden.bs.modal', function(event) {
-        $(this).removeClass( 'fv-modal-stack' );
-        $('body').data( 'fv_open_modals', $('body').data( 'fv_open_modals' ) - 1 );
-    });
+                $(this).removeClass('fv-modal-stack');
+                $('body').data('fv_open_modals', $('body').data('fv_open_modals') - 1);
+            });
 
-    $('.modal').on('shown.bs.modal', function (event) {
-        // keep track of the number of open modals
-        if ( typeof( $('body').data( 'fv_open_modals' ) ) == 'undefined' ) {
-            $('body').data( 'fv_open_modals', 0 );
-        }
+            $('.modal').on('shown.bs.modal', function(event) {
+                // keep track of the number of open modals
+                if (typeof($('body').data('fv_open_modals')) == 'undefined') {
+                    $('body').data('fv_open_modals', 0);
+                }
 
-        // if the z-index of this modal has been set, ignore.
-        if ($(this).hasClass('fv-modal-stack')) {
-            return;
-        }
+                // if the z-index of this modal has been set, ignore.
+                if ($(this).hasClass('fv-modal-stack')) {
+                    return;
+                }
 
-        $(this).addClass('fv-modal-stack');
-        $('body').data('fv_open_modals', $('body').data('fv_open_modals' ) + 1 );
-        $(this).css('z-index', 1040 + (10 * $('body').data('fv_open_modals' )));
-        $('.modal-backdrop').not('.fv-modal-stack').css('z-index', 1039 + (10 * $('body').data('fv_open_modals')));
-        $('.modal-backdrop').not('fv-modal-stack').addClass('fv-modal-stack'); 
+                $(this).addClass('fv-modal-stack');
+                $('body').data('fv_open_modals', $('body').data('fv_open_modals') + 1);
+                $(this).css('z-index', 1040 + (10 * $('body').data('fv_open_modals')));
+                $('.modal-backdrop').not('.fv-modal-stack').css('z-index', 1039 + (10 * $('body').data('fv_open_modals')));
+                $('.modal-backdrop').not('fv-modal-stack').addClass('fv-modal-stack');
 
-    });        
+            });
         });
 
         function changeBtnState() {
@@ -437,7 +440,6 @@
 
             var options = saveCheckBoxOptionHandler();
             console.log("save: " + JSON.stringify(options));
-
         });
 
         //transactionsTable checkbox control 
@@ -590,6 +592,7 @@
         }
 
         $('.edit-btn').on("click", function() {
+            $('#checkAll3').prop("checked", false);
             let id = $(this).attr("data-bs-id");
             let type = $(this).attr("data-bs-type");
             $('#editModal').find("input[name='id']").val(id);
@@ -609,6 +612,10 @@
             let id = $(this).find(".modal-title span").text();
             getTransactionDataUnderPortfolioEdit($(this), id)
         });
+
+        $('#addBtn').on("click", function() {
+            $("#checkAll2").prop('checked', false);
+        })
 
         $('#addModal').on('shown.bs.modal', function(e) {
             @if(!$portfoliosLimit)
@@ -842,8 +849,8 @@
                     if (status == "success") {
                         if (data) {
                             // alert("Exceed the limit");
-                            $("#warningModal").modal('show'); 
-                           
+                            $("#warningModal").modal('show');
+
                             return false;
                         } else {
                             $('#addModal-AddBtn').attr("disable", false);
