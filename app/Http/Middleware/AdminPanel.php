@@ -23,6 +23,6 @@ class AdminPanel
                 abort(401);
             }
         }
-        return view("login");
+        return redirect("login");
     }
 }

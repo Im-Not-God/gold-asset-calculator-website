@@ -11,7 +11,7 @@
                         mark_email_read
                     </span>
                     <p class="card-title">{{ __('Your email has been verified') }}</p>
-                    <p class="card-text">{{ __('You can continue using') }}</p>
+                    <p class="card-text">{{ __('You may now proceed to use our services.') }}</p>
 
                 </div>
             </div>

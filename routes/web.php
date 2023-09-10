@@ -44,11 +44,10 @@ Route::get('/calculator', [CalculateController::class, 'index']);
 Route::post("/calculator", [CalculateController::class, 'output']);
 
 // Route::get("/calculate/report", [CalculateController::class, 'calc']);
-Route::view("/report", "report");
-Route::post("/report", [CalculateController::class, 'transaction_calc']);
+// Route::post("/report", [CalculateController::class, 'transaction_calc']);
 
 //transaction
-Route::get('/transaction', [TransactionController::class, 'getAll'])->middleware("auth");
+Route::get('/transaction', [TransactionController::class, 'getAll'])->middleware(['auth', 'verified']);
 Route::post('/transaction/add', [TransactionController::class, 'add'])->middleware("auth");
 Route::post('/transaction/update', [TransactionController::class, 'update'])->middleware("auth");
 Route::post('/transaction/delete', [TransactionController::class, 'delete'])->middleware("auth");
@@ -60,12 +59,12 @@ Route::get('/goldprice_qm', [APIController::class, 'getQMData']);
 
 Route::get('/plan', [PlanController::class, 'getAll']);
 
-Route::view("/email/verified", "auth.verified")->middleware("verified");
+Route::view("/email/verified", "auth.verified")->middleware(['auth', 'verified']);
 
 Route::view('/blank', 'layouts.layout');
 
 //portfolio
-Route::get('/portfolio', [PortfolioController::class, 'getAll'])->middleware("auth");
+Route::get('/portfolio', [PortfolioController::class, 'getAll'])->middleware(['auth', 'verified']);
 Route::post("/portfolio/getTransactions", [PortfolioController::class, 'getTransactions'])->middleware("auth");
 Route::post('/portfolio/add', [PortfolioController::class, 'add'])->middleware("auth");
 Route::post('/portfolio/update', [PortfolioController::class, 'update'])->middleware("auth");
@@ -129,5 +128,5 @@ Route::get('/api/qmdata', function(){
 });
 
 
-Route::post('/plan', [SubscriptionController::class, "subscribePlan"])->middleware("auth");
+Route::post('/plan', [SubscriptionController::class, "subscribePlan"])->middleware(['auth', 'verified']);
 Route::post('/portfolio/checkLimit', [SubscriptionController::class, "transactionsPerPortfolioLimit_req"])->middleware("auth");
