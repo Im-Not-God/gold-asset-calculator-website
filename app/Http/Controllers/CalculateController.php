@@ -15,7 +15,6 @@ class CalculateController extends Controller
         if ($req->goldPrice == null) {
             if (!$report)
                 return redirect('/calculator');
-            // return redirect('/transaction');
         }
 
         if ($report) {
@@ -25,8 +24,6 @@ class CalculateController extends Controller
         }
 
         $goldPrice = ($report) ? $req->gold_price : $req->goldPrice;
-        // $currency = ($report) ? $req->currency : "USD";
-        // $downpayment_USD = ($report) ? (($currency == "MYR") ? $req->downpayment*APIController::getExchange(null ,$req->buyDate) : $req->downpayment) : $req->downpayment_USD;
         $downpayment_USD = ($report) ? ($req->downpayment) : $req->downpayment_USD;
         $totalHoldingGold = $downpayment_USD / $goldPrice;
         $totalHoldingGold = $downpayment_USD / $goldPrice;
@@ -59,6 +56,8 @@ class CalculateController extends Controller
                 $currentGoldPrice_updTime = gmdate("Y-m-d H:i:s", $getCurrentGoldPrice["timestamp"] + date("Z"));
             }
         }
+
+        $oldExchangeRate = APIController::getExchange("MYR", $req->buyDate)['rate'];
 
         $exchangeRate = null;
         if ($report) {
@@ -270,7 +269,7 @@ class CalculateController extends Controller
         return Validator::make($data, [
             'buyDate' => ['required', 'date'],
             'goldPrice' => ['required', 'numeric', 'gt:0'],
-            'downpayment' => ['required', 'numeric', 'gt:0'],
+            'downpayment_USD' => ['required', 'numeric', 'gt:0'],
             'convertPercent' => ['required', 'numeric', 'min:0'],
             'managementFeePercent' => ['required', 'numeric', 'min:0'],
         ])->setAttributeNames([
