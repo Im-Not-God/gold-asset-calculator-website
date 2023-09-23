@@ -378,6 +378,12 @@
             console.log("save: " + JSON.stringify(options));
         });
 
+        $("input[type='checkbox']").on("click", function(){
+            $("input[type='checkbox']:checked").each(function() {
+                console.log($(this).val(), + " " + true);
+            })
+        })
+
         $("#checkAll2, #checkAll3").click(function() {
             $(".checkBox2").prop('checked', $(this).prop('checked'));
             $('#addModal-AddBtn').prop('disabled', !$(this).prop('checked'));
@@ -420,7 +426,7 @@
                 $('#Calculate').prop('disabled', true)
                 $('#deleteSelectedBtn').prop('disabled', true)
             }
-            if ($('input[type=checkbox]:checked').length > 1) {
+            if ($('.checkBox:checked').length > 1 || $('.checkBox:checked').length == 0) {
                 $('#Calculate').prop('disabled', true);
             }
         }

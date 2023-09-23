@@ -15,6 +15,7 @@ class CalculateController extends Controller
         if ($req->goldPrice == null) {
             if (!$report)
                 return redirect('/calculator');
+            // return redirect('/transaction');
         }
 
         if ($report) {
@@ -24,6 +25,8 @@ class CalculateController extends Controller
         }
 
         $goldPrice = ($report) ? $req->gold_price : $req->goldPrice;
+        // $currency = ($report) ? $req->currency : "USD";
+        // $downpayment_USD = ($report) ? (($currency == "MYR") ? $req->downpayment*APIController::getExchange(null ,$req->buyDate) : $req->downpayment) : $req->downpayment_USD;
         $downpayment_USD = ($report) ? ($req->downpayment) : $req->downpayment_USD;
         $totalHoldingGold = $downpayment_USD / $goldPrice;
         $totalHoldingGold = $downpayment_USD / $goldPrice;
@@ -56,8 +59,6 @@ class CalculateController extends Controller
                 $currentGoldPrice_updTime = gmdate("Y-m-d H:i:s", $getCurrentGoldPrice["timestamp"] + date("Z"));
             }
         }
-
-        $oldExchangeRate = APIController::getExchange("MYR", $req->buyDate)['rate'];
 
         $exchangeRate = null;
         if ($report) {
@@ -137,8 +138,9 @@ class CalculateController extends Controller
                             break;
                         }
                     }
-                    $currentGoldPrice_updTime = date_format(date_create($updateDT), "Y-m-d H:i:s");
-                    $exchangeRate_updTime = date_format(date_create($updateDT), "Y-m-d H:i:s");
+                    $timestamp = strtotime(str_replace('/', '-', $updateDT));
+                    $currentGoldPrice_updTime = date("Y-m-d H:i:s", $timestamp);
+                    $exchangeRate_updTime = $currentGoldPrice_updTime;
                     return [
                         'convertPercent' => 91,
                         'managementFeePercent' => 3.5,
@@ -180,7 +182,6 @@ class CalculateController extends Controller
     {
         $this->validator($req->all())->validate();
         $result = $this->calc($req);
-        //return $req;
         return view("calculator", $result);
     }
 
