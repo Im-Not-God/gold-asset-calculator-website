@@ -26,7 +26,7 @@ Laravel is accessible, powerful, and provides tools required for large, robust a
 - Go to http://localhost:8000/
 
 ## Database
-<b>test_awad.sql</b>
+- The database data file is <b>fyp.sql</b>
 
 ## License
 
