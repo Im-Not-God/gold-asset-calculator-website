@@ -34,31 +34,31 @@ Laravel is accessible, powerful, and provides tools required for large, robust a
 - The database data file is <b>fyp.sql</b>
 
 ## Limitations and future development recommendations for different aspects of the project:
-1. Login/Register:
+#### 1. Login/Register:
   - Implement third-party login options (e.g., Google) in the login/register system.
   - Add a "view password" function to enhance user experience.
   - Provide password format hints to help users understand valid password formats.
-2. Search Functionality:
+#### 2. Search Functionality:
   - Implement a search function for easy data retrieval.
-3. User Profiles:
+#### 3. User Profiles:
   - Create user profiles with the ability to change usernames, passwords, check billing information, enhance security (e.g., two-factor authentication), link third-party accounts and delete account.
-4. Contact and About Pages:
+#### 4. Contact and About Pages:
   - Add "Contact Us" and "About Us" pages to provide additional information and support.
-5. Localization, UI and User Experience:
+#### 5. Localization, UI and User Experience:
   - Implement a toast notification bar for timely information updates.
   - Ongoing localization efforts to cover more languages.
   - Utilize Ajax for updating certain data to improve the overall user interface.
-6. Mobile App Support:
+#### 6. Mobile App Support:
   - Create APIs to support mobile app integration.
-7. Report list:
+#### 7. Report list:
   - Develop a report list page to show all report that generated before.
   - Implement the ability to save reports in PDF format and store them in the database.
-8. Billing System:
+#### 8. Billing System:
   - Develop a billing system with options like FPX.
-9. Admin Panel:
+#### 9. Admin Panel:
   - Allow admin users to add new subscription plans and delete subscription plans.
   - Develop an admin dashboard to show website data(number of user, user subscription, …) for easier site management.
-10. Legal Compliance:
+#### 10. Legal Compliance:
   - Provide terms of use and policies to ensure legal compliance.
 
 ## License
