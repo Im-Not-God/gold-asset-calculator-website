@@ -21,7 +21,6 @@ Laravel is accessible, powerful, and provides tools required for large, robust a
 - Copy <b>.env.example</b> file to <b>.env</b> on the root folder. You can type <code>copy .env.example .env</code> if using command prompt Windows
 - Open your <b>.env</b> file and change the database name (<b>DB_DATABASE</b>) to whatever you have, username (<b>DB_USERNAME</b>) and password (<b>DB_PASSWORD</b>) field correspond to your configuration.
 - Run <code>php artisan key:generate</code>
-- Run <code>php artisan migrate</code> if needed
 - Run <code>php artisan serve</code>
 - Go to http://localhost:8000/
 
