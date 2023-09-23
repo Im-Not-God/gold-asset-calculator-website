@@ -19,7 +19,12 @@ Laravel is accessible, powerful, and provides tools required for large, robust a
 - Go to the folder application using cd command on your cmd or terminal
 - Run <code>composer install</code>on your cmd or terminal
 - Copy <b>.env.example</b> file to <b>.env</b> on the root folder. You can type <code>copy .env.example .env</code> if using command prompt Windows
-- Open your <b>.env</b> file and change the database name (<b>DB_DATABASE</b>) to whatever you have, username (<b>DB_USERNAME</b>) and password (<b>DB_PASSWORD</b>) field correspond to your configuration.
+- Open your <b>.env</b> file and change the following fields to match your configuration.
+  - database config<br>![image](https://github.com/Im-Not-God/gold-asset-calculator-website/assets/82208147/16b37c59-05f9-4077-be11-d77b1397500a)
+  - mail config<br>![image](https://github.com/Im-Not-God/gold-asset-calculator-website/assets/82208147/8791e5dd-333a-449e-b77b-a2db0ad1d846)
+  - or other part...
+
+
 - Run <code>php artisan key:generate</code>
 - Run <code>php artisan serve</code>
 - Go to http://localhost:8000/
