@@ -21,7 +21,8 @@ Laravel is accessible, powerful, and provides tools required for large, robust a
 - Copy <b>.env.example</b> file to <b>.env</b> on the root folder. You can type <code>copy .env.example .env</code> if using command prompt Windows
 - Open your <b>.env</b> file and change the following fields to match your configuration.
   - database config<br>![image](https://github.com/Im-Not-God/gold-asset-calculator-website/assets/82208147/16b37c59-05f9-4077-be11-d77b1397500a)
-  - mail config<br>![image](https://github.com/Im-Not-God/gold-asset-calculator-website/assets/82208147/8791e5dd-333a-449e-b77b-a2db0ad1d846)
+  - mail config (you are supposed to change this account to your own)<br>![image](https://github.com/Im-Not-God/gold-asset-calculator-website/assets/82208147/8791e5dd-333a-449e-b77b-a2db0ad1d846)
+    <br>how to make this -> https://support.google.com/accounts/answer/185833?hl=en
   - or other part...
 
 
